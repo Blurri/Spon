@@ -22,7 +22,7 @@ module.exports.pwUpdate = function  (req, res, next) {
 	var tminus30 = new Date();
 	tminus30.removeHours(0.5);
 
-	
+	console.log(req.body.password);
 	User.findOne({
 		resetGuid : req.body.guid,
 		resetDate : {
@@ -92,8 +92,7 @@ module.exports.resetPw = function (req, res, next) {
 module.exports.requestPwReset = function (req, res, next) {
 
 	Email = req.body.email;
-
-	User.findOne({email : Email}, function (err, user) {
+	User.findOne({email : req.body.email}, function (err, user) {
 		if (err) {
 			return next(err);
 		}
@@ -108,7 +107,7 @@ module.exports.requestPwReset = function (req, res, next) {
 			if (err) {
 				return next(err);
 			}
-			if (rUser) {
+			if (!rUser) {
 				return next(new Error('No user found'));
 			}
 			send(rUser.resetGuid, rUser.email);

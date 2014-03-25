@@ -1,6 +1,11 @@
 @import "settings";
 @import "foundation";
 
+#navLink {
+	background-color : transparent;
+	padding-left : 0;
+}
+
 // $include-html-top-bar-classes: $include-html-classes;
 
 // // Background color for the top bar

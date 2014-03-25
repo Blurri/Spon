@@ -5782,3 +5782,7 @@ th.hide-for-touch {
 
 .touch th.show-for-touch {
   display: table-cell !important; }
+
+#navLink {
+  background-color: transparent;
+  padding-left: 0; }
