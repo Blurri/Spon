@@ -12,6 +12,8 @@ module.exports = Backbone.View.extend({
 	el : '#searchtext',
 	template : template,
 	render : function  () {
+		// var input = $('#searchinput');
+		// new google.maps.places.SearchBox((input));
 		return $(this.el).append(this.template);
 	},
 	search : function (e) {
