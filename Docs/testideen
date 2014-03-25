@@ -1,0 +1,27 @@
+Events:
+
+Event dessen Startzeit in der Vergangenheit liegen dürfen nicht erstellt werden. (createtd_at)
+
+Endzeit darf nicht vor Startzeit liegen.
+
+Route test:
+
+1) Erstellen. Beim erstellen muss der Benutzer eingeloggt sein.
+
+2) Erstellen. Nach dem erstellen muss der Benutzer ein Teilnehmer des Events sein.
+
+3) Erstellen. Der Benutzer kann 2 Events erstellen.
+
+4) Erstellen. Er darf nicht mehr als 2 erstellen. bzw in mehr als 2 Events sein.
+
+5) Event beitreten. Jeder Benutzer kann einem Event beitreten.
+
+6) Jeder Benutzer kann nur in 2 aktiven Events gleichzeitig sein.
+
+7) Events verlassen. Jeder muss das Event auch verlassen können.
+
+8) Verlässt der letzte das Event wird es gelöscht.
+
+9) Es muss eine Liste aktiver Events für eine Region geladen werden.
+aktiv bedeutet das Event hat Teilnehmer und die Endzeit liegt nicht 
+in der Vergangenheit.
