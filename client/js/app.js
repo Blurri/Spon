@@ -1,39 +1,43 @@
 //Dependencies
-var SearchText = require('./search');
 var map;
 
 
 $(document).ready(function (){
-	
-	console.log(google);
 
 	google.maps.event.addDomListener(window, "load", initMap);
 	//================================
 	//Startup screen
-	// var searchText = new SearchText();
-	// searchText.render();
 	// foundation
  	$(document).foundation();
 	//Startup screen end
 	//================================
-	// $("#map_canvas").css("height", $(window).height() - 70);
-	// $("#modal-content,#modal-background").toggleClass("active");
 
 })
 
+
+
+
+
 function initMap(){
+
+    /*
+    default center position of map
+    */
     var latlng = new google.maps.LatLng(-34.397, 150.644);
     var myOptions = {
         zoom: 4,
         center: latlng,
         mapTypeId: google.maps.MapTypeId.HYBRID
     };
+
+
     map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
 
+
+    // Searchbox
     var input = (document.getElementById('pac-input'));
-
+    // searchbox position on map
   	map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
   	var searchBox = new google.maps.places.SearchBox((input));
  
 
@@ -72,6 +76,8 @@ function initMap(){
     }
 
     map.fitBounds(bounds);
+
+    //reduce zomm level of map
     var listener = google.maps.event.addListener(map, "idle", function() { 
   	if (map.getZoom() > 16) map.setZoom(16); 
   		google.maps.event.removeListener(listener); 
