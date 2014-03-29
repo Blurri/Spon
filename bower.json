@@ -6,7 +6,9 @@
     "underscore": "~1.5.2",
     "backbone": "~1.1.0",
     "jquery": "*",
-    "foundation": "zurb/bower-foundation"
+    "foundation": "zurb/bower-foundation",
+    "gmaps": "~0.4.11",
+    "momentjs": "~2.5.1"
   },
   "exportsOverride": {
     "jquery": {
@@ -21,11 +23,10 @@
     "backbone": {
       "js": "backbone.js"
     },
-    "foundation" : {
-
-      },
-      "modernizr" : {
-        
-      }
+    "foundation": {},
+    "modernizr": {},
+    "gmaps": {
+      "js": "gmaps.js"
+    }
   }
 }

@@ -1,122 +1,264 @@
 ;(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-//Dependencies
-var SearchText = require('./search');
 var map;
+var Events = require('./controllers/events').eventCollection;
+var Event = require('./controllers/events').eventModel;
+var eventMarkers = [];
+var router = require('./router');
+var collection;
+var EventListener = {};
+var EventView = require('./controllers/events').newEvent;
 
-
-$(document).ready(function (){
-	
-	console.log(google);
-
-	google.maps.event.addDomListener(window, "load", initMap);
-	//================================
-	//Startup screen
-	// var searchText = new SearchText();
-	// searchText.render();
-	// foundation
- 	$(document).foundation();
-	//Startup screen end
-	//================================
-	// $("#map_canvas").css("height", $(window).height() - 70);
-	// $("#modal-content,#modal-background").toggleClass("active");
-
-})
-
-function initMap(){
-    var latlng = new google.maps.LatLng(-34.397, 150.644);
-    var myOptions = {
-        zoom: 4,
-        center: latlng,
-        mapTypeId: google.maps.MapTypeId.HYBRID
-    };
-    map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
-
-    var input = (document.getElementById('pac-input'));
-
-  	map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-  	var searchBox = new google.maps.places.SearchBox((input));
- 
-
-  	var markers = [];
-
-  	google.maps.event.addListener(searchBox, 'places_changed', function() {
-    var places = searchBox.getPlaces();
-
-    for (var i = 0, marker; marker = markers[i]; i++) {
-      marker.setMap(null);
-    }
-
-    // For each place, get the icon, place name, and location.
-    markers = [];
-    var bounds = new google.maps.LatLngBounds();
-    for (var i = 0, place; place = places[i]; i++) {
-      var image = {
-        url: place.icon,
-        size: new google.maps.Size(71, 71),
-        origin: new google.maps.Point(0, 0),
-        anchor: new google.maps.Point(17, 34),
-        scaledSize: new google.maps.Size(25, 25)
-      };
-
-      // Create a marker for each place.
-      var marker = new google.maps.Marker({
-        map: map,
-        icon: image,
-        title: place.name,
-        position: place.geometry.location
-      });
-
-      markers.push(marker);
-
-      bounds.extend(place.geometry.location);
-    }
-
-    map.fitBounds(bounds);
-    var listener = google.maps.event.addListener(map, "idle", function() { 
-  	if (map.getZoom() > 16) map.setZoom(16); 
-  		google.maps.event.removeListener(listener); 
+$(document).ready(function(){
+	configureEventListener();
+	// router.start(EventListener);
+	$(document).foundation();
+	$('#myModal').foundation('reveal', 'open');
+	collection = new Events();
+	map = new GMaps({
+	el: '#map_canvas',
+	lat: -12.043333,
+	lng: -77.028333,
+	zoomControl : true,
+	zoomControlOpt: {
+		position: 'TOP_LEFT'
+	}
 	});
-  });
-};
-},{"./search":2}],2:[function(require,module,exports){
 
-var template = require('../views/searchtext.hbs');
+	setUpContextMenu();
+
+	map.map.setMapTypeId(google.maps.MapTypeId.HYBRID);
+
+	
+	setUpSearchBoxListener();
+
+	boundsListener();
+});
 
 
-var model = Backbone.Model.extend();
+function setUpSearchBoxListener () {
+	// Searchbox
+	var input = (document.getElementById('pac-input'));
+	var input2 = (document.getElementById('pac-input2'));
+	 
+	map.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+	var searchBox = new google.maps.places.SearchBox((input));
+	var searchBox2 = new google.maps.places.SearchBox((input2));
+
+	google.maps.event.addListener(searchBox2, 'places_changed', function() {
+		$('#myModal').foundation('reveal', 'close');		
+		var places = searchBox2.getPlaces();
+		var bounds = new google.maps.LatLngBounds();
+		for (var i = 0, place; place = places[i]; i++) {
+			bounds.extend(place.geometry.location);
+		}
+		map.map.fitBounds(bounds);
+	
+	});
+	google.maps.event.addListener(searchBox, 'places_changed', function() {
+		var places = searchBox.getPlaces();
+		var bounds = new google.maps.LatLngBounds();
+		for (var i = 0, place; place = places[i]; i++) {
+			bounds.extend(place.geometry.location);
+		}
+		map.map.fitBounds(bounds);
+	
+	});
+}
 
 
-module.exports = Backbone.View.extend({
+
+function boundsListener () {
+	google.maps.event.addListener(map.map, 'idle', function (ev) {
+		fetchCollectionForViewdMap();
+	});
+}
+
+
+
+function setUpContextMenu () {
+	map.setContextMenu({
+		control: 'map',
+		options: [{
+			title: 'New Event',
+			name: 'new_event',
+			action: function(e) {
+				var view = new EventView();
+				view.render(e,EventListener)
+			}
+		}]
+	});
+}
+
+
+
+function fetchCollectionForViewdMap () {
+	var bounds = map.map.getBounds();
+	var ne = bounds.getNorthEast();
+	var se = bounds.getSouthWest();
+	var distance = google.maps.geometry.spherical.computeDistanceBetween (ne, se) / 1000;
+	
+	collection.reset();
+	collection.url = '/eventsList';
+
+	collection.fetch({data : 
+		{ distance : distance,
+		 longitude : map.map.getCenter().lng(), 
+		  latitude : map.map.getCenter().lat() }}).complete(fetchCollectionComplete);
+}
+
+function fetchCollectionComplete (res, status) {
+	map.removeMarkers();
+	collection.each(function (event) {
+		var date = new Date(event.get('start_time'));
+		var loc = event.get('loc');
+		var contentString = '<div id="content">'+
+			'<p><strong>Where:</strong><br /> '+ event.get('where') +' <br />' +
+			'<strong>When:</strong><br /> ' + date.toLocaleTimeString() + ' <br />' +
+			'<strong>Description:</strong><br /> ' + event.get('description') + '</p>' +
+			'<br /> <a href="/#gugus">link</a>' +
+			'</div>';				
+		map.addMarker({
+			lat : loc[1],
+			lng : loc[0],					
+			infoWindow : {
+				content : contentString
+			}
+		})		
+	});
+}
+
+
+function configureEventListener(){
+	_.extend(EventListener,Backbone.Events);
+	EventListener.on('eventsaved', function(msg){
+		console.log(status);
+		fetchCollectionForViewdMap();
+	})
+
+	var object = {};
+}
+
+
+
+},{"./controllers/events":2,"./router":3}],2:[function(require,module,exports){
+var newTemplate = require('../../views/newEvent.hbs');	
+
+var eventModel = Backbone.Model.extend({
+	idAttribute : '_id'
+});
+module.exports.eventModel = eventModel;
+
+
+var eventCollection =  Backbone.Collection.extend({
+	model : eventModel
+});
+module.exports.eventCollection = eventCollection;
+
+module.exports.newEvent = Backbone.View.extend({
+	el : '#newEventModal',
 	events : {
-		'click #searchbutton' : 'search'
+		'click #submitNewEvent' : 'submitNewEvent'
 	},
-	el : '#searchtext',
-	template : template,
-	render : function  () {
-		// var input = $('#searchinput');
-		// new google.maps.places.SearchBox((input));
-		return $(this.el).append(this.template);
+	template : newTemplate,
+	render : function (e, EventListener) {
+		this.point = e;
+		this.eventListener = EventListener;
+		$(this.el).html(this.template());
+		$('#newEventModal').foundation('reveal', 'open');
+		return ;
 	},
-	search : function (e) {
+	submitNewEvent : function (e) {
+
 		e.preventDefault();
-		console.log($('#searchinput').val());
+		$('#newEventModal').foundation('reveal', 'close');
+		var model = new eventModel(getData(this.el));
+		model.loc = [this.point.latLng.lng(),this.point.latLng.lat()];
+		model.url = '/event';
+		model.save().complete(function (res, status) {
+			this.eventListener.trigger('eventsaved', status);
+			this.remove();			
+		})
 	}
 })
-},{"../views/searchtext.hbs":3}],3:[function(require,module,exports){
+
+
+
+function getData (el) {
+	var start_time = $(el).find('#start_time').val();
+	var end_time = $(el).find('#end_time').val();
+	var where = $(el).find('#where').val();
+	var description = $(el).find('#description').val();
+
+	var dates = checkTime(start_time,end_time);
+
+	return {
+		start_time : dates[0],
+		end_time : dates[1],
+		where : where,
+		description : description
+	}
+}
+
+function checkTime(start, end) {
+	var tmpStart = start.replace(':', '');
+	var tmpEnd = end.replace(':', '');
+	var dateStart = moment();
+	var dateEnd = moment();
+
+	console.log(tmpStart - tmpEnd);
+	if (tmpStart - tmpEnd > 0 ) {				
+		dateEnd.add('days', 1);
+	}
+	tmpStart = start.split(':');
+	tmpEnd = end.split(':');
+
+	// dateStart.setHours(tmpStart[0], tmpEnd[1]);
+	dateStart.hour(tmpStart[0]).minute(tmpStart[1]);	
+	// dateEnd.setHours(tmpEnd[0],tmpEnd[1]);
+	dateEnd.hour(tmpEnd[0]).minute(tmpEnd[1]);
+	var returnVal = [];
+	returnVal.push(dateStart.toDate());
+	returnVal.push(dateEnd.toDate());
+	return returnVal;
+
+}
+},{"../../views/newEvent.hbs":4}],3:[function(require,module,exports){
+var EventView = require('./controllers/events').newEvent;
+
+
+exports.start = function (EventListener) {
+
+    var eventListener = EventListener;
+    var AppRouter = Backbone.Router.extend({
+        routes: {
+            "newEvent/:lng/:lat": "newEvent" 
+        }
+    });
+    // Initiate the router
+    var app_router = new AppRouter;
+
+    app_router.on('route:newEvent', function(lng, lat) {
+        // alert(lng + 'hallo' + lat);
+        var view = new EventView();
+        view.render(eventListener);
+    })
+
+    // Start Backbone history a necessary step for bookmarkable URL's
+    Backbone.history.start();   
+}
+},{"./controllers/events":2}],4:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var Handlebars = require('hbsfy/runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "";
+  
 
 
-  buffer += "\n<div id=\"modal-background\"></div>\n<div id=\"modal-content\">\n	<div class=\"row collapse\">\n       	<div class=\"small-10 columns\">\n       		<input type=\"text\" placeholder=\"Hex Value\" id=\"searchinput\">\n       	</div>\n       	<div class=\"small-2 columns\">\n       		<button id=\"searchbutton\" class=\"button postfix\">GO!</button>\n       	</div>\n    </div>\n    <button id=\"modal-close\">Close Modal Window</button>\n</div>\n\n\n\n";
-  return buffer;
+  return "<div>\n	<label>Start time:</label>\n	<input type=\"time\" id=\"start_time\" value=\"00:00\">\n	<label>End time:</label>\n	<input type=\"time\" id=\"end_time\" value=\"00:00\">\n	<label>Where:</label>\n	<input type=\"text\" id=\"where\">\n	<label>Description</label>\n	<input type=\"textarea\" id=\"description\">\n	<button id=\"submitNewEvent\">Sumbit</button>\n</div>";
   });
 
-},{"hbsfy/runtime":11}],4:[function(require,module,exports){
+},{"hbsfy/runtime":12}],5:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var base = require("./handlebars/base");
@@ -149,7 +291,7 @@ var Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars/base":5,"./handlebars/exception":6,"./handlebars/runtime":7,"./handlebars/safe-string":8,"./handlebars/utils":9}],5:[function(require,module,exports){
+},{"./handlebars/base":6,"./handlebars/exception":7,"./handlebars/runtime":8,"./handlebars/safe-string":9,"./handlebars/utils":10}],6:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -330,7 +472,7 @@ exports.log = log;var createFrame = function(object) {
   return obj;
 };
 exports.createFrame = createFrame;
-},{"./exception":6,"./utils":9}],6:[function(require,module,exports){
+},{"./exception":7,"./utils":10}],7:[function(require,module,exports){
 "use strict";
 
 var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
@@ -359,7 +501,7 @@ function Exception(message, node) {
 Exception.prototype = new Error();
 
 exports["default"] = Exception;
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -497,7 +639,7 @@ exports.program = program;function invokePartial(partial, name, context, helpers
 exports.invokePartial = invokePartial;function noop() { return ""; }
 
 exports.noop = noop;
-},{"./base":5,"./exception":6,"./utils":9}],8:[function(require,module,exports){
+},{"./base":6,"./exception":7,"./utils":10}],9:[function(require,module,exports){
 "use strict";
 // Build out our basic SafeString type
 function SafeString(string) {
@@ -509,7 +651,7 @@ SafeString.prototype.toString = function() {
 };
 
 exports["default"] = SafeString;
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 /*jshint -W004 */
 var SafeString = require("./safe-string")["default"];
@@ -586,13 +728,13 @@ exports.escapeExpression = escapeExpression;function isEmpty(value) {
 }
 
 exports.isEmpty = isEmpty;
-},{"./safe-string":8}],10:[function(require,module,exports){
+},{"./safe-string":9}],11:[function(require,module,exports){
 // Create a simple path alias to allow browserify to resolve
 // the runtime on a supported path.
 module.exports = require('./dist/cjs/handlebars.runtime');
 
-},{"./dist/cjs/handlebars.runtime":4}],11:[function(require,module,exports){
+},{"./dist/cjs/handlebars.runtime":5}],12:[function(require,module,exports){
 module.exports = require("handlebars/runtime")["default"];
 
-},{"handlebars/runtime":10}]},{},[1])
+},{"handlebars/runtime":11}]},{},[1])
 ;

@@ -10,18 +10,13 @@ module.exports = function  (app, passport, auth) {
 
 	app.post('/login', function (req, res, next) {
 		passport.authenticate('local', function (err, user, info) {
-
 			if (err) { return res.send({status : 'err', message: err.message}, 403) ;}
-
 			if (!user) { return res.send({status : 'fail', message : info.message }, 403); }
-
 			req.logIn(user, function (err) {
 				if (err) { 
 
 					return next(err);
 				}
-
-				// return res.json(user); OLD CODE
 				res.redirect('/');
 			});
 		})(req, res, next);
@@ -32,6 +27,7 @@ module.exports = function  (app, passport, auth) {
 	//EVENT ROUTES
 	app.post('/event', auth.requiresLogin, EventController.create);
 	app.post('/eventlist', EventController.eventlist);
+	app.get('/eventsList', EventController.eventsList);
 	app.get('/myevents', auth.requiresLogin, EventController.myevents);
 	app.get('/leaveEvent/:id', auth.requiresLogin, EventController.leaveEvent);
 	app.get('/joinEvent/:id', auth.requiresLogin, EventController.joinEvent);

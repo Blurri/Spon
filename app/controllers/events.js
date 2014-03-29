@@ -39,11 +39,9 @@ exports.joinEvent = function (req, res, next) {
 		}
 	}, req)
 }
-
+//==================
+//TEST
 exports.eventlist = function  (req, res, next) {
-	// var distance = req.query.distance;
-	// var longitude = req.query.longitude;
-	// var latitude = req.query.latitude;
 	
 	var distance = req.body.distance;
 	var longitude = req.body.longitude;
@@ -60,7 +58,27 @@ exports.eventlist = function  (req, res, next) {
 		res.json(result);
 	});
 }
+//=================
 
+exports.eventsList = function  (req, res, next) {
+			
+		
+		
+	var distance = req.query.distance;
+	var longitude = req.query.longitude;
+	var latitude = req.query.latitude;
+	
+
+
+	Event.find({loc : {
+		$geoWithin : {
+			$centerSphere : [[longitude, latitude],
+			distance / 6371]
+		}
+	}}, function (err, result) {
+		res.json(result);
+	});
+}
 
 
 exports.myevents = function  (req, res, next) {

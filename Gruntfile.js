@@ -65,6 +65,17 @@ module.exports = function (grunt) {
 								jquery : '$',
 								underscore : '_'
 							}
+						},
+						gmaps : {
+							path : 'client/requires/gmaps/js/gmaps.js',
+							exports : 'gmaps',
+							depends : {
+								jquery : '$'
+							}
+						},
+						moment : {
+							path : 'client/requires/momentjs/moment.js',
+							exports : 'moment'
 						}
 					}
 				}
@@ -78,7 +89,6 @@ module.exports = function (grunt) {
 					transform : ['hbsfy']
 				}
 			}
-			// , test : {}
 		},
 		
 

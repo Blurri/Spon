@@ -12,7 +12,7 @@
 /*#wrapper { position: relative; }*/
 /*#searchtext { position: absolute; top: 50%; left: 50%; width: 250px; margin: -120px 0 0 -160px;}*/
 
-
+/*
 #modal-background {
     display: none;
     position: fixed;
@@ -50,8 +50,7 @@
 #modal-background.active, #modal-content.active {
     display: block;
 }
-
-
+*/
 .controls {
     margin-top: 16px;
     border: 1px solid transparent;
@@ -76,7 +75,7 @@
 #pac-input:focus {
     border-color: #4d90fe;
     margin-left: -1px;
-    padding-left: 14px;  /* Regular padding-left + 1. */
+    padding-left: 14px;
     width: 401px;
 }
 
@@ -87,4 +86,5 @@
 
 #map_canvas {
     height: 80%;
+
 }

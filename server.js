@@ -52,8 +52,12 @@ app.use(app.router);
 
 // development only
 if ('development' == app.get('env')) {
+  console.log('Development mode');
+  require('./config/seed').seed();
   app.use(express.errorHandler());
 }
+
+
 
 // ROUTES
 require('./config/routes')(app, passport, auth);
