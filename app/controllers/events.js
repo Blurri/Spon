@@ -136,7 +136,7 @@ exports.addMessage = function  (req, res) {
 		Chat.findByIdAndUpdate(event.chat._id, {
 			$push: { "messages" : newChatMessage(req) }
 		}, function (err, chat) {
-			var lastMsg = chat.messages[updatedEvent.chat.messages.length - 1];
+			var lastMsg = chat.messages[chat.messages.length - 1];
 			res.send(lastMsg);
 		})
 
