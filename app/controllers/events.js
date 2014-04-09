@@ -1,4 +1,5 @@
 var Event = require('../models/event');
+var Chat = require('../models/chat');
 
 exports.create = function (req,res,next) {
 
@@ -29,7 +30,7 @@ exports.joinEvent = function (req, res, next) {
 			if (value >= 2) {
 				res.send('too much active events', 405);
 			} else {
-				Event.findByIdAndUpdate(req.params.id, { $addToSet : { members : req.user._id } }, function (err, event) {
+				Event.findByIdAndUpdate(req.body._id, { $addToSet : { members : req.user._id } }, function (err, event) {
 					if (err) {
 						return next(err);
 					}
@@ -53,7 +54,7 @@ exports.eventlist = function  (req, res, next) {
 		$geoWithin : {
 			$centerSphere : [[longitude, latitude],
 			distance / 6371]
-		}
+		}, end_time : { $gt : new Date()}
 	}}, function (err, result) {
 		res.json(result);
 	});
@@ -80,6 +81,12 @@ exports.eventsList = function  (req, res, next) {
 	});
 }
 
+exports.eventForId = function (req, res, next) {
+
+	Event.findById(req.query.id, function (err, event) {
+		console.log(event);
+	})
+}
 
 exports.myevents = function  (req, res, next) {
 	Event.find({members : req.user._id, end_time : { $gt : new Date() }}, function (err, results) {
@@ -91,13 +98,11 @@ exports.myevents = function  (req, res, next) {
 }
 
 exports.leaveEvent = function  (req, res, next) {
-	// console.log(req.params.id)
 	Event.findByIdAndUpdate(req.params.id, { $pull : { 'members' : req.user._id }}, function (err, event) {
 		if (err) {
 			return next(err);
 		}
 		if (!event.members.length > 0) {
-			// console.log('------')
 			event.remove(function (err) {
 				if (err) {
 					return next(err);
@@ -108,6 +113,37 @@ exports.leaveEvent = function  (req, res, next) {
 		} else {
 			res.json(event);
 		}
+	})
+}
+
+
+exports.chat = function (req, res) {
+	Event.findById(req.params.id).populate('chat').populate('messages').exec(function  (err, event) {
+		if (err) {
+			res.send('505', 'Error!!!');
+		}
+		res.json(event);
+	})
+}
+
+exports.addMessage = function  (req, res) {
+	Event.findById(req.params.id).populate('chat').populate('messages').exec(function  (err, event) {
+		if (err) {
+			res.send('505', 'Error!!!');
+		}
+
+
+		event.chat.messages.push(newChatMessage(req));
+		console.log(event.chat.messages);
+		event.save(function (err, updatedEvent) {
+			if (err) {
+				res.send('505', 'Error!!!');
+			}	
+			console.log(updatedEvent.chat.messages.length);
+			var lastMsg = updatedEvent.chat.messages[updatedEvent.chat.messages.length - 1];
+			res.send(lastMsg);
+		})
+		
 	})
 }
 
@@ -138,3 +174,17 @@ function calcDiff ( date1, date2 ) {
   // Convert back to days and return
   return Math.round(difference_ms/houresInMS); 
 } 
+
+
+
+function newChatMessage (req) {
+	var nickname = 'nobody';
+	if (req.user != undefined){
+		nickname = req.user.nickname;
+	}	
+	message = req.body.message;
+	return {
+		nickname : nickname,
+		message : message
+	}
+}

@@ -1,21 +1,29 @@
-var EventView = require('./controllers/events').newEvent;
+var DetailEvent = require('./controllers/events').detailEvent;
+var Event = require('./controllers/events').eventModel;
 
-
-exports.start = function (EventListener) {
-
-    var eventListener = EventListener;
+exports.start = function (collection) {
+    var collection = collection;
     var AppRouter = Backbone.Router.extend({
         routes: {
-            "newEvent/:lng/:lat": "newEvent" 
+            'detailEvent/:eventId' : 'detailEvent'
         }
     });
     // Initiate the router
     var app_router = new AppRouter;
 
-    app_router.on('route:newEvent', function(lng, lat) {
-        // alert(lng + 'hallo' + lat);
-        var view = new EventView();
-        view.render(eventListener);
+    app_router.on('route:detailEvent', function(eventId) {
+        
+        var view = new DetailEvent();
+        if (collection.get(eventId)) {
+            view.render(collection.get(eventId));
+        }else {
+            var event = new Event();
+            event.url = '/findEvent',
+            event.fetch({data : {id : eventId}});
+            view.render(collection.get(eventId));
+        }
+
+    
     })
 
     // Start Backbone history a necessary step for bookmarkable URL's

@@ -8,7 +8,8 @@ var express = require('express'),
 	passport = require('./config/passport'),
 	config = require('./config/config'),
 	auth = require('./config/middlewares/authorization'),
-	app = express();
+	app = express(),
+	Primus = require('primus');
 
 //--------------
 //Variables
@@ -62,15 +63,22 @@ if ('development' == app.get('env')) {
 // ROUTES
 require('./config/routes')(app, passport, auth);
 app.get('/', function (req, res) {
-	res.render('index');
-})
 
+	var nickname = 'nobody';
+	var userId = 0;
+	if (req.user != undefined) {
+		nickname = req.user.nickname;
+		userId = req.user._id;
+	}
+	res.render('index', { nickname : nickname, userId : userId });
+})
 
 var server = app.listen(app.get('port'), function  () {
 				console.log('Server started at port : ' + app.get('port'));
 			});
 
-require('./config/socket.io')(require('socket.io').listen(server));
+// require('./config/socket.io')(require('socket.io').listen(server));
+require('./config/sockets')(require('socket.io').listen(server));
 
 
 module.exports = app;

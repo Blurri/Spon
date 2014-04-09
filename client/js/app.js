@@ -1,6 +1,7 @@
 var map;
 var Events = require('./controllers/events').eventCollection;
 var Event = require('./controllers/events').eventModel;
+var EventDetailView = require('./controllers/events').detailEvent;
 var eventMarkers = [];
 var router = require('./router');
 var collection;
@@ -8,15 +9,18 @@ var EventListener = {};
 var EventView = require('./controllers/events').newEvent;
 
 $(document).ready(function(){
+
+
 	configureEventListener();
-	// router.start(EventListener);
-	$(document).foundation();
-	$('#myModal').foundation('reveal', 'open');
 	collection = new Events();
+	router.start(collection);
+	// $(document).foundation();
+	$(document).foundation();
+	
 	map = new GMaps({
 	el: '#map_canvas',
-	lat: -12.043333,
-	lng: -77.028333,
+	lat: 47,
+	lng: 8,
 	zoomControl : true,
 	zoomControlOpt: {
 		position: 'TOP_LEFT'
@@ -26,7 +30,6 @@ $(document).ready(function(){
 	setUpContextMenu();
 
 	map.map.setMapTypeId(google.maps.MapTypeId.HYBRID);
-
 	
 	setUpSearchBoxListener();
 
@@ -65,7 +68,6 @@ function setUpSearchBoxListener () {
 }
 
 
-
 function boundsListener () {
 	google.maps.event.addListener(map.map, 'idle', function (ev) {
 		fetchCollectionForViewdMap();
@@ -99,10 +101,12 @@ function fetchCollectionForViewdMap () {
 	collection.reset();
 	collection.url = '/eventsList';
 
-	collection.fetch({data : 
+	collection.fetch({ data : 
 		{ distance : distance,
 		 longitude : map.map.getCenter().lng(), 
-		  latitude : map.map.getCenter().lat() }}).complete(fetchCollectionComplete);
+		  latitude : map.map.getCenter().lat() 
+		}
+	}).complete(fetchCollectionComplete);
 }
 
 function fetchCollectionComplete (res, status) {
@@ -110,17 +114,12 @@ function fetchCollectionComplete (res, status) {
 	collection.each(function (event) {
 		var date = new Date(event.get('start_time'));
 		var loc = event.get('loc');
-		var contentString = '<div id="content">'+
-			'<p><strong>Where:</strong><br /> '+ event.get('where') +' <br />' +
-			'<strong>When:</strong><br /> ' + date.toLocaleTimeString() + ' <br />' +
-			'<strong>Description:</strong><br /> ' + event.get('description') + '</p>' +
-			'<br /> <a href="/#gugus">link</a>' +
-			'</div>';				
 		map.addMarker({
 			lat : loc[1],
-			lng : loc[0],					
-			infoWindow : {
-				content : contentString
+			lng : loc[0],
+			click : function () {	
+				var view = new EventDetailView();
+				view.render(event);
 			}
 		})		
 	});
@@ -136,5 +135,15 @@ function configureEventListener(){
 
 	var object = {};
 }
+///=====================================================
+// ERROR HANDLING
 
+
+$.ajaxSetup({
+            statusCode: {
+                401: function(){
+           			alert('Please log in with your account');
+                }
+            }
+        });
 

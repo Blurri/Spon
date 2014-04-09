@@ -1,5 +1,5 @@
 var Event = require('../app/models/event');
-
+var Chat = require('../app/models/chat');
 var date1 = new Date();
 date1.addHours(3)
 
@@ -36,6 +36,9 @@ var array = [
 ];
 
 
+
+
+
 module.exports.seed = function () {
 
 	Event.collection.remove(function (err) {
@@ -44,12 +47,24 @@ module.exports.seed = function () {
 
 	for(var i in array) {
 
+
+
 		new Event(array[i]).save(function (err, newEvent) {
 			if (err) {
 				console.log(err);
 				console.log('ERROR SEED');
 			}
-			console.log(newEvent);
+
+			var chat = new Chat();
+			chat.messages.push({nickname : 'gugus', message : 'Hallo Welt!'})
+			chat.save(function  (err, newChat) {
+				newEvent.chat = newChat;
+
+				console.log(newChat);
+				newEvent.save();
+
+			});
+			// console.log(newEvent);
 		})
 	}
 }

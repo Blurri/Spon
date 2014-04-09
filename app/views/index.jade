@@ -40,10 +40,13 @@ block content
         h2 Awesome. I have it.
         p.lead your couch. its mine
         p I'm a cool paragraph that lives inside of a even cooler modal . Wins
-        #newEvent
         input#pac-input2.controls(type="text" placeholder="Search Box")
         a.close-reveal-modal &#215;
-            
-            
+    #eventDetail.reveal-modal(data-reveal)
+        a.close-reveal-modal &#215;
+
+    script.
+        var loggedInNickname = !{JSON.stringify(nickname)};
+
 
     #footer

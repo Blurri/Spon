@@ -1,0 +1,31 @@
+include ./layouts/layout
+
+block content
+
+
+	input(type="text", placeholder="")
+
+
+	script.
+
+		var socket = io.connect('http://localhost');
+		socket.emit('joinChat', 454554);
+		socket.emit('joinChat', 487543);
+		
+		socket.on('userJoind', function (msg){
+			console.log(msg);
+			socket.emit('postMessage','hallo',487543);
+			socket.emit('postMessage','hallo',454554);
+		})
+		socket.on('newMessage', function(msg){
+			console.log('new Message');
+			console.log(msg);
+		});
+
+
+		//- var socket = io.connect('http://localhost');
+		//- socket.emit('joinChat', 71287891);
+		//- socket.emit('joinChat', 9298910);
+		//- socket.on('userJoind', function (msg){
+		//- 	console.log(msg);
+		//- })

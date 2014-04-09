@@ -34,7 +34,7 @@ var eventSchema = new Schema({
 	description : String,
 	tags : [],
 	members : [Schema.ObjectId],
-	chat : Schema.ObjectId
+	chat : {type : Schema.ObjectId, ref : 'Chat'}
 })
 
 eventSchema.index({ loc : '2d' });	

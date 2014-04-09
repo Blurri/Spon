@@ -18,7 +18,10 @@
     "crypto": "*",
     "socket.io": "*",
     "nodemailer": "~0.6.1",
-    "mailgun-js": "~0.3.3"
+    "mailgun-js": "~0.3.3",
+    "connect": "*",
+    "primus": "~2.1.4",
+    "ws": "~0.4.31"
   },
   "devDependencies": {
     "bower": "~1.2.8",

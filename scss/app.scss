@@ -1,6 +1,15 @@
 @import "settings";
 @import "foundation";
 
+.navForm{
+  @include panel();
+  width: 500px;
+}
+
+.infoWindow {
+	width : 250px;
+}
+
 #navLink {
 	background-color : transparent;
 	padding-left : 0;
@@ -12,12 +21,27 @@
   height: 15.8%;
 }
 
-// $include-html-top-bar-classes: $include-html-classes;
-
-// // Background color for the top bar
-// $topbar-bg-color: #333;
-// $topbar-bg: $topbar-bg-color;
-
+#chatWrapper {
+	margin-left: auto;
+	margin-right: auto;
+}
+#attributesBox {
+	float: left;
+	height: 500px;
+	width: 30%;
+}
+#msgBox {
+	float: left;	
+	overflow: scroll;
+	height: 500px;
+	width: 70%;
+-webkit-box-shadow: 50px 27px 300px -163px rgba(0,0,0,0.53);
+-moz-box-shadow: 50px 27px 300px -163px rgba(0,0,0,0.53);
+box-shadow: 50px 27px 300px -163px rgba(0,0,0,0.53);
+}
+#msgBox p {
+	border-bottom: 2px dotted black;
+}
 // Or selectively include components
 // @import
 //   "foundation/components/accordion",
@@ -55,8 +79,3 @@
 //   "foundation/components/type",
 //   "foundation/components/offcanvas",
 //   "foundation/components/visibility";
-
-// @import "foundation/components/top-bar";
-
-// $topbar-bg-color: #DF3A01;
-// $topbar-bg: $topbar-bg-color;

@@ -17,7 +17,7 @@ module.exports = function  (app, passport, auth) {
 
 					return next(err);
 				}
-				res.redirect('/');
+				res.render('index', { nickname : user.nickname, userId : user._id });
 			});
 		})(req, res, next);
 	})
@@ -31,6 +31,12 @@ module.exports = function  (app, passport, auth) {
 	app.get('/myevents', auth.requiresLogin, EventController.myevents);
 	app.get('/leaveEvent/:id', auth.requiresLogin, EventController.leaveEvent);
 	app.get('/joinEvent/:id', auth.requiresLogin, EventController.joinEvent);
+	app.get('/findEvent', EventController.eventForId);
+	app.put('/joinEvent', auth.requiresLogin, EventController.joinEvent)
+
+	app.get('/eventChat/:id', EventController.chat);
+	app.post('/addMessage/:id', EventController.addMessage);
+
 
 	//PW reset
 	// app.post('/pwReset/', PasswortReset.resetPassword);
