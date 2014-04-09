@@ -3,7 +3,7 @@ exports.development = {
 }
 
 exports.production = {
-	db : ''
+	db : 'mongodb://heroku:heroku@ds045627.mongolab.com:45627/heroku'
 }
 
 exports.test = {
