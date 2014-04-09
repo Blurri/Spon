@@ -153,7 +153,7 @@ $.ajaxSetup({
 /*
 Dependencies
 */
-var socket = io.connect('http://localhost');
+var socket = io.connect('http://spontanious.herokuapp.com/');
 var newTemplate = require('../../views/newEvent.hbs');	
 var detailTemplate = require('../../views/detailEvent.hbs');
 var Handlebars = require('handlebars');
