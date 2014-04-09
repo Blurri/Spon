@@ -133,16 +133,23 @@ exports.addMessage = function  (req, res) {
 		}
 
 
-		event.chat.messages.push(newChatMessage(req));
-		console.log(event.chat.messages);
-		event.save(function (err, updatedEvent) {
-			if (err) {
-				res.send('505', 'Error!!!');
-			}	
-			console.log(updatedEvent.chat.messages.length);
-			var lastMsg = updatedEvent.chat.messages[updatedEvent.chat.messages.length - 1];
+		Chat.findByIdAndUpdate(event.chat._id, {
+			$push: { "messages" : newChatMessage(req) }
+		}, function (err, chat) {
+			var lastMsg = chat.messages[updatedEvent.chat.messages.length - 1];
 			res.send(lastMsg);
 		})
+
+		// event.chat.messages.push(newChatMessage(req));
+		// console.log(event.chat.messages);
+		// event.save(function (err, updatedEvent) {
+		// 	if (err) {
+		// 		res.send('505', 'Error!!!');
+		// 	}	
+		// 	console.log(updatedEvent.chat.messages.length);
+			// var lastMsg = updatedEvent.chat.messages[updatedEvent.chat.messages.length - 1];
+			// res.send(lastMsg);
+		// })
 		
 	})
 }
