@@ -67,14 +67,16 @@ exports.eventsList = function  (req, res, next) {
 	var longitude = req.query.longitude;
 	var latitude = req.query.latitude;
 	
-
-
-	Event.find({loc : {
-		$geoWithin : {
-			$centerSphere : [[longitude, latitude],
-			distance / 6371]
-		}, end_time : { $gt : new Date()}
-	}}, function (err, result) {
+	Event.find({
+		loc : {
+			$geoWithin : {
+				$centerSphere : [[longitude, latitude],
+				distance / 6371]
+			}
+		},
+		end_time : { $gt : new Date()}
+	},
+	function (err, result) {
 		res.json(result);
 	});
 }

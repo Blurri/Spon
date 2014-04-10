@@ -21,7 +21,8 @@
     "mailgun-js": "~0.3.3",
     "connect": "*",
     "primus": "~2.1.4",
-    "ws": "~0.4.31"
+    "ws": "~0.4.31",
+    "moment": "~2.5.1"
   },
   "devDependencies": {
     "bower": "~1.2.8",
