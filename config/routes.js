@@ -17,7 +17,8 @@ module.exports = function  (app, passport, auth) {
 
 					return next(err);
 				}
-				res.render('index', { nickname : user.nickname, userId : user._id });
+				// res.render('index', { nickname : user.nickname, userId : user._id });
+				res.redirect('/');
 			});
 		})(req, res, next);
 	})

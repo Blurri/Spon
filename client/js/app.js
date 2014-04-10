@@ -38,7 +38,6 @@ $(document).ready(function(){
 	boundsListener();
 });
 
-
 function setUpSearchBoxListener () {
 	// Searchbox
 	var input = (document.getElementById('pac-input'));
