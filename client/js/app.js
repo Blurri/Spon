@@ -7,6 +7,8 @@ var router = require('./router');
 var collection;
 var EventListener = {};
 var EventView = require('./controllers/events').newEvent;
+var moment = require('moment');
+
 
 $(document).ready(function(){
 
@@ -112,8 +114,16 @@ function fetchCollectionForViewdMap () {
 function fetchCollectionComplete (res, status) {
 	map.removeMarkers();
 	collection.each(function (event) {
+
+		var start_time  = moment(event.get('start_time'));
+		
+		var end_time  = moment(event.get('end_time'));
+
+		event.set('start_time', start_time.format('LLL'));
+		event.set('end_time', end_time.format('LLL'));
 		var date = new Date(event.get('start_time'));
 		var loc = event.get('loc');
+		
 		map.addMarker({
 			lat : loc[1],
 			lng : loc[0],

@@ -42,6 +42,10 @@ box-shadow: 50px 27px 300px -163px rgba(0,0,0,0.53);
 #msgBox p {
 	border-bottom: 2px dotted black;
 }
+
+.createdAt {
+	float: right;
+}
 // Or selectively include components
 // @import
 //   "foundation/components/accordion",

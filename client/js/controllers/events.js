@@ -67,8 +67,20 @@ module.exports.detailEvent = Backbone.View.extend({
 	render : function (model) {
 		var self = this;
 		self.model = model;
+		
 		self.model.urlRoot = '/eventChat';
 		self.model.fetch().complete(function (res, status) {
+
+			var d1 = moment(self.model.get('start_time'));
+			var d2 = moment(self.model.get('end_time'));
+			self.model.set({'start_time' : d1.format('LLL')});
+			self.model.set({'end_time' : d2.format('LLL')});
+			var messages = self.model.get('chat').messages;
+
+			for(var i = 0; i < messages.length;i++){
+
+				messages[i].created_at = moment(messages[i].created_at).format('LLL');
+			}
 			configureSocketIO(self.model, self.el)
 			$(self.el).html(self.template(self.model.toJSON()));
 			$('#eventDetail').bind('closed', function() {
@@ -76,7 +88,7 @@ module.exports.detailEvent = Backbone.View.extend({
 			});
 			$('#eventDetail').foundation('reveal', 'open');
 			if (loggedInNickname != 'nobody') {
-				$('.' + loggedInNickname).css({'background-color' : 'red'});
+				$('.' + loggedInNickname).css({'background-color' : '#EEEEEE'});
 			}
 			return;	
 		});
@@ -95,7 +107,7 @@ module.exports.detailEvent = Backbone.View.extend({
 		$.post('/addMessage/'+ self.model.id,{
 			message : $(this.el).find('#newMsg').val()
 		}, function  (data) {
-			console.log(data);
+			$('#newMsg').val('');
 			socket.emit('postMessage', data, self.model.id);
 		})
 	}
@@ -108,7 +120,7 @@ function getData (el) {
 	var description = $(el).find('#description').val();
 
 	var dates = checkTime(start_time,end_time);
-
+	console.log(dates);
 	return {
 		start_time : dates[0],
 		end_time : dates[1],
@@ -123,9 +135,15 @@ function checkTime(start, end) {
 	var dateStart = moment();
 	var dateEnd = moment();
 
-	if (tmpStart - tmpEnd > 0 ) {				
+	var timeNow = moment().hour() + '' + moment().minutes();
+	if (timeNow - tmpStart > 0) {
+		dateStart.add('days', 1);
+		dateEnd.add('days', 1);
+	} else if (tmpStart - tmpEnd > 0 ) {				
 		dateEnd.add('days', 1);
 	}
+
+
 	tmpStart = start.split(':');
 	tmpEnd = end.split(':');
 
@@ -136,6 +154,7 @@ function checkTime(start, end) {
 	var returnVal = [];
 	returnVal.push(dateStart.toDate());
 	returnVal.push(dateEnd.toDate());
+	console.log(returnVal);
 	return returnVal;
 
 }
@@ -144,14 +163,26 @@ function configureSocketIO (model, el) {
 	socket.emit('joinChat', model.id);
 	socket.on('newMessage', function (msg) {
 
-		var newMsg = '<div class="'+msg.nickname+'"> <p> <strong> ' + msg.nickname + ' </strong> ' + msg.message + ' <i> ' + msg.created_at + ' </i></p></div>';
+		// var newMsg = '<div class="'+msg.nickname+'"> <p> <strong> ' + msg.nickname + ' </strong> ' + msg.message + ' <i> ' + moment(msg.created_at,'LLL') + ' </i></p></div>';
+
+
+		var newMsg = createMSG(msg);
+
+
+
 		$(el).find('#msgBox').append(newMsg);
 		var objDiv = document.getElementById('msgBox');
 		objDiv.scrollTop = objDiv.scrollHeight;
 		if (loggedInNickname != 'nobody') {
-			$('.' + loggedInNickname).css({'background-color' : 'red'});
+			$('.' + loggedInNickname).css({'background-color' : '#EEEEEE'});
 		}
 		
 	})
 }
-     
+
+
+
+function createMSG (msg) {
+	return '<div class="'+msg.nickname+'"> <p> <strong class="nickname"> '	+ msg.nickname + ' </strong> <i class="createdAt"> ' + moment(msg.created_at).format('LLL') + ' </i><br /> ' + msg.message + ' </p> </div> ';
+}
+

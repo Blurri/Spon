@@ -5835,3 +5835,6 @@ th.hide-for-touch {
 
 #msgBox p {
   border-bottom: 2px dotted black; }
+
+.createdAt {
+  float: right; }

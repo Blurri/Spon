@@ -8,7 +8,9 @@ exports.create = function (req,res,next) {
 			if (value >= 2) {
 				res.send('too much active events', 405)
 			} else {
+				console.log(req.body);
 				var newEvent = new Event(req.body);
+				var date = new Date();
 				newEvent.members.push(req.user._id);
 				newEvent.save(function (err,event) {
 					if (err) {
@@ -59,10 +61,7 @@ exports.eventlist = function  (req, res, next) {
 }
 //=================
 
-exports.eventsList = function  (req, res, next) {
-	
-		
-		
+exports.eventsList = function  (req, res, next) {	
 	var distance = req.query.distance;
 	var longitude = req.query.longitude;
 	var latitude = req.query.latitude;
@@ -139,18 +138,6 @@ exports.addMessage = function  (req, res) {
 			var lastMsg = chat.messages[chat.messages.length - 1];
 			res.send(lastMsg);
 		})
-
-		// event.chat.messages.push(newChatMessage(req));
-		// console.log(event.chat.messages);
-		// event.save(function (err, updatedEvent) {
-		// 	if (err) {
-		// 		res.send('505', 'Error!!!');
-		// 	}	
-		// 	console.log(updatedEvent.chat.messages.length);
-			// var lastMsg = updatedEvent.chat.messages[updatedEvent.chat.messages.length - 1];
-			// res.send(lastMsg);
-		// })
-		
 	})
 }
 

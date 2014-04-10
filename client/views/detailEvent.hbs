@@ -17,9 +17,10 @@
 		{{#each chat.messages}}
 			<div class="{{nickname}}">
 				<p>
-					<strong>{{nickname}}</strong>
+					<strong class="nickname">{{nickname}}</strong>
+					<i class="createdAt">{{created_at}}</i>
+					<br />
 					{{message}}
-					<i>{{created_at}}</i>
 				</p>
 			</div>
 		{{/each}}
