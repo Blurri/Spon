@@ -76,6 +76,10 @@ module.exports = function (grunt) {
 						moment : {
 							path : 'client/requires/momentjs/moment.js',
 							exports : 'moment'
+						},
+						fastclick : {
+							path : 'client/requires/fastclick/fastclick.js',
+							exports : 'FastClick'
 						}
 					}
 				}

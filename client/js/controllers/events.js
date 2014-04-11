@@ -98,7 +98,10 @@ module.exports.detailEvent = Backbone.View.extend({
 		e.preventDefault();
 		this.model.url = '/joinEvent';
 		this.model.save().complete(function (err, status) {
-			console.log(err);
+			if (err) {
+				alert(err);
+			}
+			$(self.el).find('#membersCount').html(self.model.members.length);
 		})
 	},
 	sendMsg : function  (e) {
@@ -143,13 +146,11 @@ function checkTime(start, end) {
 		dateEnd.add('days', 1);
 	}
 
-
 	tmpStart = start.split(':');
 	tmpEnd = end.split(':');
 
-	// dateStart.setHours(tmpStart[0], tmpEnd[1]);
 	dateStart.hour(tmpStart[0]).minute(tmpStart[1]);	
-	// dateEnd.setHours(tmpEnd[0],tmpEnd[1]);
+
 	dateEnd.hour(tmpEnd[0]).minute(tmpEnd[1]);
 	var returnVal = [];
 	returnVal.push(dateStart.toDate());
@@ -163,20 +164,14 @@ function configureSocketIO (model, el) {
 	socket.emit('joinChat', model.id);
 	socket.on('newMessage', function (msg) {
 
-		// var newMsg = '<div class="'+msg.nickname+'"> <p> <strong> ' + msg.nickname + ' </strong> ' + msg.message + ' <i> ' + moment(msg.created_at,'LLL') + ' </i></p></div>';
-
-
 		var newMsg = createMSG(msg);
-
-
 
 		$(el).find('#msgBox').append(newMsg);
 		var objDiv = document.getElementById('msgBox');
 		objDiv.scrollTop = objDiv.scrollHeight;
 		if (loggedInNickname != 'nobody') {
 			$('.' + loggedInNickname).css({'background-color' : '#EEEEEE'});
-		}
-		
+		}		
 	})
 }
 

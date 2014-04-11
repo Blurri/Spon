@@ -11,8 +11,6 @@ exports.signup = function (req, res, next) {
 			if (err) {
 				return next(err);
 			}
-			// res.json({_id : user._id, nickname : user.nickname}); OLD CODE
-			// res.render('index', { nickname : user.nickname, userId : user._id });
 			res.redirect('/');
 
 		});
@@ -21,6 +19,5 @@ exports.signup = function (req, res, next) {
 
 exports.logout = function (req, res, next) {
 	req.logout();
-	// res.json({ status : 'logout'}); OLD CODE
 	res.redirect('/');
 }

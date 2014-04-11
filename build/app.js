@@ -259,7 +259,10 @@ module.exports.detailEvent = Backbone.View.extend({
 		e.preventDefault();
 		this.model.url = '/joinEvent';
 		this.model.save().complete(function (err, status) {
-			console.log(err);
+			if (err) {
+				alert(err);
+			}
+			$(self.el).find('#membersCount').html(self.model.members.length);
 		})
 	},
 	sendMsg : function  (e) {
@@ -304,13 +307,11 @@ function checkTime(start, end) {
 		dateEnd.add('days', 1);
 	}
 
-
 	tmpStart = start.split(':');
 	tmpEnd = end.split(':');
 
-	// dateStart.setHours(tmpStart[0], tmpEnd[1]);
 	dateStart.hour(tmpStart[0]).minute(tmpStart[1]);	
-	// dateEnd.setHours(tmpEnd[0],tmpEnd[1]);
+
 	dateEnd.hour(tmpEnd[0]).minute(tmpEnd[1]);
 	var returnVal = [];
 	returnVal.push(dateStart.toDate());
@@ -324,20 +325,14 @@ function configureSocketIO (model, el) {
 	socket.emit('joinChat', model.id);
 	socket.on('newMessage', function (msg) {
 
-		// var newMsg = '<div class="'+msg.nickname+'"> <p> <strong> ' + msg.nickname + ' </strong> ' + msg.message + ' <i> ' + moment(msg.created_at,'LLL') + ' </i></p></div>';
-
-
 		var newMsg = createMSG(msg);
-
-
 
 		$(el).find('#msgBox').append(newMsg);
 		var objDiv = document.getElementById('msgBox');
 		objDiv.scrollTop = objDiv.scrollHeight;
 		if (loggedInNickname != 'nobody') {
 			$('.' + loggedInNickname).css({'background-color' : '#EEEEEE'});
-		}
-		
+		}		
 	})
 }
 
@@ -427,7 +422,7 @@ function program1(depth0,data) {
   if (helper = helpers.description) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.description); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
-    + "</p>\n		<label>Members</label>\n		<p>"
+    + "</p>\n		<label>Members</label>\n		<p id=\"membersCount\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.members)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</p>\n		<button id=\"joinEvent\">Join</button>\n		<br />\n	</div>\n	<div id=\"msgBox\">\n		";
   stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.chat)),stack1 == null || stack1 === false ? stack1 : stack1.messages), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
