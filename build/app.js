@@ -149,15 +149,16 @@ function configureEventListener(){
 }
 
 function fetchMyEvents () {
+	collectionMyEvents = new Events();
 
 	if ( loggedInNickname != undefined && loggedInNickname != 'nobody' ){
-		collectionMyEvents = new Events();
-
 		collectionMyEvents.url = '/myEvents';
 
 		collectionMyEvents.fetch().complete(function  (res, status) {
 			renderMyEvents();
 		})
+	}else {
+		renderMyEvents();
 	}
 
 		
@@ -165,8 +166,6 @@ function fetchMyEvents () {
 
 
 function renderMyEvents () {
-	
-	console.log(collectionMyEvents);
 	var view = new MyEventsView({collection : collectionMyEvents});
 	view.render();
 }
