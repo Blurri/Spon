@@ -22,7 +22,7 @@ exports.start = function (collection) {
             event.fetch({data : {id : eventId}});
             view.render(collection.get(eventId));
         }
-
+        app_router.navigate('/', true);
     
     })
 
