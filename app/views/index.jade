@@ -16,7 +16,9 @@ block content
     #eventDetail.reveal-modal(data-reveal)
         a.close-reveal-modal &#215;
 
-    script.
-        var loggedInNickname = !{JSON.stringify(username)};
+    if isAuthenticated
+        script.
+            var loggedInNickname = !{JSON.stringify(username)};
 
+    #controllView
     #footer

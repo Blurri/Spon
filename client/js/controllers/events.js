@@ -3,6 +3,7 @@ Dependencies
 */
 var socket = io.connect(window.location.hostname);
 var newTemplate = require('../../views/newEvent.hbs');	
+var myEventsTemplate = require('../../views/myEvents.hbs');	
 var detailTemplate = require('../../views/detailEvent.hbs');
 var Handlebars = require('handlebars');
 
@@ -124,6 +125,27 @@ module.exports.detailEvent = Backbone.View.extend({
 		
 	}
 })
+
+
+//============================
+// MY EVENTS
+
+
+
+
+module.exports.myEvents = Backbone.View.extend({
+	el : '#controllView',
+	template : myEventsTemplate,
+	render : function  () {
+		console.log(this.collection.toJSON());
+		return $(this.el).html(this.template(this.collection.toJSON()));
+	}
+})
+
+
+
+//============================
+//============================
 
 function getData (el) {
 	var start_time = $(el).find('#start_time').val();

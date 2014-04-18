@@ -46,6 +46,17 @@ box-shadow: 50px 27px 300px -163px rgba(0,0,0,0.53);
 .createdAt {
 	float: right;
 }
+
+
+#controllView {
+	width: 200px;
+	height: 100px;
+	border: 1px solid black;
+	background : rgba(236,240,241,.7);
+	position: absolute;
+	top: 20%;
+	right: 0;
+}
 // Or selectively include components
 // @import
 //   "foundation/components/accordion",

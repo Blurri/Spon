@@ -1618,9 +1618,7 @@ global._ = require("underscore");
 
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
-},{"jquery":"P/MueZ","underscore":"h9nqxI"}],"fastclick":[function(require,module,exports){
-module.exports=require('1Myjjw');
-},{}],"1Myjjw":[function(require,module,exports){
+},{"jquery":"P/MueZ","underscore":"h9nqxI"}],"1Myjjw":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};(function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 /**
  * @preserve FastClick: polyfill to remove click delays on browsers with touch UIs.
@@ -2416,8 +2414,8 @@ if (typeof define !== 'undefined' && define.amd) {
 
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
-},{}],"gmaps":[function(require,module,exports){
-module.exports=require('sH0hkm');
+},{}],"fastclick":[function(require,module,exports){
+module.exports=require('1Myjjw');
 },{}],"sH0hkm":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};(function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 
@@ -4506,7 +4504,9 @@ return GMaps;
 
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
-},{"jquery":"P/MueZ"}],7:[function(require,module,exports){
+},{"jquery":"P/MueZ"}],"gmaps":[function(require,module,exports){
+module.exports=require('sH0hkm');
+},{}],7:[function(require,module,exports){
 /*! http://mths.be/placeholder v2.0.7 by @mathias */
 ;(function(window, document, $) {
 
@@ -16384,6 +16384,8 @@ var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? 
 
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
+},{}],"underscore":[function(require,module,exports){
+module.exports=require('h9nqxI');
 },{}],"h9nqxI":[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};(function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 //     Underscore.js 1.5.2
@@ -17667,18 +17669,18 @@ var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? 
 
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
-},{}],"underscore":[function(require,module,exports){
-module.exports=require('h9nqxI');
-},{}]},{},["xagiSe","1Myjjw",7,"sH0hkm",8,9,"P/MueZ",12,"GlrHcP","h9nqxI"])
+},{}]},{},["xagiSe","1Myjjw","sH0hkm",7,8,9,"P/MueZ",12,"GlrHcP","h9nqxI"])
 ;
 ;(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var map;
+var MyEventsView = require('./controllers/events').myEvents;
 var Events = require('./controllers/events').eventCollection;
 var Event = require('./controllers/events').eventModel;
 var EventDetailView = require('./controllers/events').detailEvent;
 var eventMarkers = [];
 var router = require('./router');
 var collection;
+var collectionMyEvents;
 var EventListener = {};
 var EventView = require('./controllers/events').newEvent;
 var moment = require('moment');
@@ -17689,8 +17691,8 @@ $(document).ready(function(){
 
 	configureEventListener();
 	collection = new Events();
+	fetchMyEvents();
 	router.start(collection);
-	// $(document).foundation();
 	$(document).foundation();
 	
 	map = new GMaps({
@@ -17818,6 +17820,25 @@ function configureEventListener(){
 
 	var object = {};
 }
+
+function fetchMyEvents () {
+
+	collectionMyEvents = new Events();
+
+	collectionMyEvents.url = '/myEvents';
+
+	collectionMyEvents.fetch().complete(function  (res, status) {
+		renderMyEvents();
+	})
+}
+
+
+function renderMyEvents () {
+
+	console.log(collectionMyEvents);
+	var view = new MyEventsView({collection : collectionMyEvents});
+	view.render();
+}
 ///=====================================================
 // ERROR HANDLING
 
@@ -17831,12 +17852,13 @@ $.ajaxSetup({
         });
 
 
-},{"./controllers/events":2,"./router":3,"moment":24}],2:[function(require,module,exports){
+},{"./controllers/events":2,"./router":3,"moment":25}],2:[function(require,module,exports){
 /*
 Dependencies
 */
 var socket = io.connect(window.location.hostname);
 var newTemplate = require('../../views/newEvent.hbs');	
+var myEventsTemplate = require('../../views/myEvents.hbs');	
 var detailTemplate = require('../../views/detailEvent.hbs');
 var Handlebars = require('handlebars');
 
@@ -17959,6 +17981,27 @@ module.exports.detailEvent = Backbone.View.extend({
 	}
 })
 
+
+//============================
+// MY EVENTS
+
+
+
+
+module.exports.myEvents = Backbone.View.extend({
+	el : '#controllView',
+	template : myEventsTemplate,
+	render : function  () {
+		console.log(this.collection.toJSON());
+		return $(this.el).html(this.template(this.collection.toJSON()));
+	}
+})
+
+
+
+//============================
+//============================
+
 function getData (el) {
 	var start_time = $(el).find('#start_time').val();
 	var end_time = $(el).find('#end_time').val();
@@ -18033,7 +18076,7 @@ function checkTextField (el) {
 	}
 	return returnVal;
 }
-},{"../../views/detailEvent.hbs":4,"../../views/newEvent.hbs":5,"handlebars":21}],3:[function(require,module,exports){
+},{"../../views/detailEvent.hbs":4,"../../views/myEvents.hbs":5,"../../views/newEvent.hbs":6,"handlebars":22}],3:[function(require,module,exports){
 var DetailEvent = require('./controllers/events').detailEvent;
 var Event = require('./controllers/events').eventModel;
 
@@ -18121,7 +18164,33 @@ function program1(depth0,data) {
   return buffer;
   });
 
-},{"hbsfy/runtime":23}],5:[function(require,module,exports){
+},{"hbsfy/runtime":24}],5:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var Handlebars = require('hbsfy/runtime');
+module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n		<a href=\"/#detailEvent/"
+    + escapeExpression(((stack1 = (depth0 && depth0._id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.where)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</a>\n	";
+  return buffer;
+  }
+
+  buffer += "<div>\n	<h2>My Events</h2>\n	";
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</div>";
+  return buffer;
+  });
+
+},{"hbsfy/runtime":24}],6:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var Handlebars = require('hbsfy/runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -18133,13 +18202,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   return "<div>\n	<label>Start time:</label>\n	<input type=\"time\" id=\"start_time\" value=\"00:00\">\n	<label>End time:</label>\n	<input type=\"time\" id=\"end_time\" value=\"00:00\">\n	<label>Where:</label>\n	<input type=\"text\" id=\"where\">\n	<label>Description</label>\n	<input type=\"textarea\" id=\"description\">\n	<button id=\"submitNewEvent\">Sumbit</button>\n</div>";
   });
 
-},{"hbsfy/runtime":23}],6:[function(require,module,exports){
+},{"hbsfy/runtime":24}],7:[function(require,module,exports){
 
 // not implemented
 // The reason for having an empty file and not throwing is to allow
 // untraditional implementation of this module.
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var Handlebars = require("./handlebars.runtime")["default"];
@@ -18177,7 +18246,7 @@ Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars.runtime":8,"./handlebars/compiler/ast":10,"./handlebars/compiler/base":11,"./handlebars/compiler/compiler":12,"./handlebars/compiler/javascript-compiler":13}],8:[function(require,module,exports){
+},{"./handlebars.runtime":9,"./handlebars/compiler/ast":11,"./handlebars/compiler/base":12,"./handlebars/compiler/compiler":13,"./handlebars/compiler/javascript-compiler":14}],9:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var base = require("./handlebars/base");
@@ -18210,7 +18279,7 @@ var Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars/base":9,"./handlebars/exception":17,"./handlebars/runtime":18,"./handlebars/safe-string":19,"./handlebars/utils":20}],9:[function(require,module,exports){
+},{"./handlebars/base":10,"./handlebars/exception":18,"./handlebars/runtime":19,"./handlebars/safe-string":20,"./handlebars/utils":21}],10:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -18391,7 +18460,7 @@ exports.log = log;var createFrame = function(object) {
   return obj;
 };
 exports.createFrame = createFrame;
-},{"./exception":17,"./utils":20}],10:[function(require,module,exports){
+},{"./exception":18,"./utils":21}],11:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 
@@ -18619,7 +18688,7 @@ var AST = {
 // Must be exported as an object rather than the root of the module as the jison lexer
 // most modify the object to operate properly.
 exports["default"] = AST;
-},{"../exception":17}],11:[function(require,module,exports){
+},{"../exception":18}],12:[function(require,module,exports){
 "use strict";
 var parser = require("./parser")["default"];
 var AST = require("./ast")["default"];
@@ -18635,7 +18704,7 @@ function parse(input) {
 }
 
 exports.parse = parse;
-},{"./ast":10,"./parser":14}],12:[function(require,module,exports){
+},{"./ast":11,"./parser":15}],13:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 
@@ -19105,7 +19174,7 @@ exports.precompile = precompile;function compile(input, options, env) {
 }
 
 exports.compile = compile;
-},{"../exception":17}],13:[function(require,module,exports){
+},{"../exception":18}],14:[function(require,module,exports){
 "use strict";
 var COMPILER_REVISION = require("../base").COMPILER_REVISION;
 var REVISION_CHANGES = require("../base").REVISION_CHANGES;
@@ -20048,7 +20117,7 @@ JavaScriptCompiler.isValidJavaScriptVariableName = function(name) {
 };
 
 exports["default"] = JavaScriptCompiler;
-},{"../base":9,"../exception":17}],14:[function(require,module,exports){
+},{"../base":10,"../exception":18}],15:[function(require,module,exports){
 "use strict";
 /* jshint ignore:start */
 /* Jison generated parser */
@@ -20539,7 +20608,7 @@ function Parser () { this.yy = {}; }Parser.prototype = parser;parser.Parser = Pa
 return new Parser;
 })();exports["default"] = handlebars;
 /* jshint ignore:end */
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 var Visitor = require("./visitor")["default"];
 
@@ -20678,7 +20747,7 @@ PrintVisitor.prototype.content = function(content) {
 PrintVisitor.prototype.comment = function(comment) {
   return this.pad("{{! '" + comment.comment + "' }}");
 };
-},{"./visitor":16}],16:[function(require,module,exports){
+},{"./visitor":17}],17:[function(require,module,exports){
 "use strict";
 function Visitor() {}
 
@@ -20691,7 +20760,7 @@ Visitor.prototype = {
 };
 
 exports["default"] = Visitor;
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 "use strict";
 
 var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
@@ -20720,7 +20789,7 @@ function Exception(message, node) {
 Exception.prototype = new Error();
 
 exports["default"] = Exception;
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -20858,7 +20927,7 @@ exports.program = program;function invokePartial(partial, name, context, helpers
 exports.invokePartial = invokePartial;function noop() { return ""; }
 
 exports.noop = noop;
-},{"./base":9,"./exception":17,"./utils":20}],19:[function(require,module,exports){
+},{"./base":10,"./exception":18,"./utils":21}],20:[function(require,module,exports){
 "use strict";
 // Build out our basic SafeString type
 function SafeString(string) {
@@ -20870,7 +20939,7 @@ SafeString.prototype.toString = function() {
 };
 
 exports["default"] = SafeString;
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 /*jshint -W004 */
 var SafeString = require("./safe-string")["default"];
@@ -20947,7 +21016,7 @@ exports.escapeExpression = escapeExpression;function isEmpty(value) {
 }
 
 exports.isEmpty = isEmpty;
-},{"./safe-string":19}],21:[function(require,module,exports){
+},{"./safe-string":20}],22:[function(require,module,exports){
 // USAGE:
 // var handlebars = require('handlebars');
 
@@ -20974,15 +21043,15 @@ if (typeof require !== 'undefined' && require.extensions) {
   require.extensions[".hbs"] = extension;
 }
 
-},{"../dist/cjs/handlebars":7,"../dist/cjs/handlebars/compiler/printer":15,"../dist/cjs/handlebars/compiler/visitor":16,"fs":6}],22:[function(require,module,exports){
+},{"../dist/cjs/handlebars":8,"../dist/cjs/handlebars/compiler/printer":16,"../dist/cjs/handlebars/compiler/visitor":17,"fs":7}],23:[function(require,module,exports){
 // Create a simple path alias to allow browserify to resolve
 // the runtime on a supported path.
 module.exports = require('./dist/cjs/handlebars.runtime');
 
-},{"./dist/cjs/handlebars.runtime":8}],23:[function(require,module,exports){
+},{"./dist/cjs/handlebars.runtime":9}],24:[function(require,module,exports){
 module.exports = require("handlebars/runtime")["default"];
 
-},{"handlebars/runtime":22}],24:[function(require,module,exports){
+},{"handlebars/runtime":23}],25:[function(require,module,exports){
 //! moment.js
 //! version : 2.5.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors

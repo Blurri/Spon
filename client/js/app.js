@@ -1,10 +1,12 @@
 var map;
+var MyEventsView = require('./controllers/events').myEvents;
 var Events = require('./controllers/events').eventCollection;
 var Event = require('./controllers/events').eventModel;
 var EventDetailView = require('./controllers/events').detailEvent;
 var eventMarkers = [];
 var router = require('./router');
 var collection;
+var collectionMyEvents;
 var EventListener = {};
 var EventView = require('./controllers/events').newEvent;
 var moment = require('moment');
@@ -15,8 +17,8 @@ $(document).ready(function(){
 
 	configureEventListener();
 	collection = new Events();
+	fetchMyEvents();
 	router.start(collection);
-	// $(document).foundation();
 	$(document).foundation();
 	
 	map = new GMaps({
@@ -143,6 +145,25 @@ function configureEventListener(){
 	})
 
 	var object = {};
+}
+
+function fetchMyEvents () {
+
+	collectionMyEvents = new Events();
+
+	collectionMyEvents.url = '/myEvents';
+
+	collectionMyEvents.fetch().complete(function  (res, status) {
+		renderMyEvents();
+	})
+}
+
+
+function renderMyEvents () {
+
+	console.log(collectionMyEvents);
+	var view = new MyEventsView({collection : collectionMyEvents});
+	view.render();
 }
 ///=====================================================
 // ERROR HANDLING
