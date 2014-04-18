@@ -15,7 +15,6 @@ var moment = require('moment');
 
 $(document).ready(function(){
 
-	console.log(isAuthenticated);
 
 	configureEventListener();
 	collection = new Events();
@@ -151,18 +150,22 @@ function configureEventListener(){
 
 function fetchMyEvents () {
 
-	collectionMyEvents = new Events();
+	if ( loggedInNickname != undefined && loggedInNickname != 'nobody' ){
+		collectionMyEvents = new Events();
 
-	collectionMyEvents.url = '/myEvents';
+		collectionMyEvents.url = '/myEvents';
 
-	collectionMyEvents.fetch().complete(function  (res, status) {
-		renderMyEvents();
-	})
+		collectionMyEvents.fetch().complete(function  (res, status) {
+			renderMyEvents();
+		})
+	}
+
+		
 }
 
 
 function renderMyEvents () {
-
+	
 	console.log(collectionMyEvents);
 	var view = new MyEventsView({collection : collectionMyEvents});
 	view.render();
