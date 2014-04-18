@@ -17692,9 +17692,8 @@ $(document).ready(function(){
 	configureEventListener();
 	collection = new Events();
 	fetchMyEvents();
-	router.start(collection);
-	$(document).foundation();
 	
+	$(document).foundation();
 	map = new GMaps({
 	el: '#map_canvas',
 	lat: 47,
@@ -17709,6 +17708,8 @@ $(document).ready(function(){
 
 	map.map.setMapTypeId(google.maps.MapTypeId.HYBRID);
 	
+	router.start(collection, map);
+
 	setUpSearchBoxListener();
 
 	boundsListener();
@@ -17813,11 +17814,15 @@ function fetchCollectionComplete (res, status) {
 
 function configureEventListener(){
 	_.extend(EventListener,Backbone.Events);
-	EventListener.on('eventsaved', function(msg){
-		console.log(status);
+	EventListener.on('eventsaved', function(status, res){
+		if (status == 'error') {
+			alert(res.responseText);
+		}
 		fetchCollectionForViewdMap();
 	})
-
+	EventListener.on('joiendEvent', function () {
+		fetchMyEvents();
+	})
 	var object = {};
 }
 
@@ -17910,10 +17915,8 @@ module.exports.newEvent = Backbone.View.extend({
 		model.set('loc', [this.point.latLng.lng(),this.point.latLng.lat()]);		
 		model.url = '/event';
 		model.save().complete(function (res, status) {
-			console.log(res);
-			console.log(status);
-			EventListener.trigger('eventsaved', status);
-			self.remove();			
+			EventListener.trigger('eventsaved', status, res);
+			// self.remove();			
 		})
 	}
 })
@@ -17925,7 +17928,8 @@ module.exports.detailEvent = Backbone.View.extend({
 		'click #joinEvent' : 'joinEvent',
 		'click #sendMsg' : 'sendMsg'
 	},
-	render : function (model) {
+	render : function (model, eventListener) {
+		EventListener = eventListener;
 		var self = this;
 		self.model = model;
 		
@@ -17963,6 +17967,7 @@ module.exports.detailEvent = Backbone.View.extend({
 				alert(err);
 			}
 			$(self.el).find('#membersCount').html(self.model.members.length);
+			EventListener.trigger('joiendEvent');
 		})
 	},
 	sendMsg : function  (e) {
@@ -18086,7 +18091,7 @@ function checkTextField (el) {
 var DetailEvent = require('./controllers/events').detailEvent;
 var Event = require('./controllers/events').eventModel;
 
-exports.start = function (collection) {
+exports.start = function (collection, map) {
     var collection = collection;
     var AppRouter = Backbone.Router.extend({
         routes: {
@@ -18097,16 +18102,18 @@ exports.start = function (collection) {
     var app_router = new AppRouter;
 
     app_router.on('route:detailEvent', function(eventId) {
-        
+        var event;
         var view = new DetailEvent();
         if (collection.get(eventId)) {
-            view.render(collection.get(eventId));
+            event = collection.get(eventId);
+            view.render(event);
         }else {
-            var event = new Event();
+            event = new Event();
             event.url = '/findEvent',
             event.fetch({data : {id : eventId}});
             view.render(collection.get(eventId));
         }
+        map.setCenter(event.get('loc')[1], event.get('loc')[0]);
         app_router.navigate('/', true);
     
     })
@@ -18163,10 +18170,10 @@ function program1(depth0,data) {
   buffer += escapeExpression(stack1)
     + "</p>\n		<label>Members</label>\n		<p id=\"membersCount\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.members)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</p>\n		<button id=\"joinEvent\">Join</button>\n		<br />\n	</div>\n	<div id=\"msgBox\">\n		";
+    + "</p>\n		<button id=\"joinEvent\" class=\"button small radius\">Join</button>\n		<br />\n	</div>\n	<div id=\"msgBox\">\n		";
   stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.chat)),stack1 == null || stack1 === false ? stack1 : stack1.messages), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	</div>\n\n	<input type=\"text\" id=\"newMsg\" />\n	<button id=\"sendMsg\">Senden</button>\n\n</div>\n<a class=\"close-reveal-modal\">&#215;</a>";
+  buffer += "\n	</div>\n\n	<input type=\"text\" id=\"newMsg\" />\n	<button id=\"sendMsg\" class=\"button small radius\">Senden</button>\n\n</div>\n\n<a class=\"close-reveal-modal\">&#215;</a>\n";
   return buffer;
   });
 
@@ -18185,7 +18192,7 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0._id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.where)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</a>\n	";
+    + "</a>\n		<hr>\n	";
   return buffer;
   }
 

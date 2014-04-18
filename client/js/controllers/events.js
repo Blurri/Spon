@@ -52,10 +52,8 @@ module.exports.newEvent = Backbone.View.extend({
 		model.set('loc', [this.point.latLng.lng(),this.point.latLng.lat()]);		
 		model.url = '/event';
 		model.save().complete(function (res, status) {
-			console.log(res);
-			console.log(status);
-			EventListener.trigger('eventsaved', status);
-			self.remove();			
+			EventListener.trigger('eventsaved', status, res);
+			// self.remove();			
 		})
 	}
 })
@@ -67,7 +65,8 @@ module.exports.detailEvent = Backbone.View.extend({
 		'click #joinEvent' : 'joinEvent',
 		'click #sendMsg' : 'sendMsg'
 	},
-	render : function (model) {
+	render : function (model, eventListener) {
+		EventListener = eventListener;
 		var self = this;
 		self.model = model;
 		
@@ -105,6 +104,7 @@ module.exports.detailEvent = Backbone.View.extend({
 				alert(err);
 			}
 			$(self.el).find('#membersCount').html(self.model.members.length);
+			EventListener.trigger('joiendEvent');
 		})
 	},
 	sendMsg : function  (e) {

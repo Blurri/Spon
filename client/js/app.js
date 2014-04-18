@@ -18,9 +18,8 @@ $(document).ready(function(){
 	configureEventListener();
 	collection = new Events();
 	fetchMyEvents();
-	router.start(collection);
-	$(document).foundation();
 	
+	$(document).foundation();
 	map = new GMaps({
 	el: '#map_canvas',
 	lat: 47,
@@ -35,6 +34,8 @@ $(document).ready(function(){
 
 	map.map.setMapTypeId(google.maps.MapTypeId.HYBRID);
 	
+	router.start(collection, map);
+
 	setUpSearchBoxListener();
 
 	boundsListener();
@@ -139,11 +140,15 @@ function fetchCollectionComplete (res, status) {
 
 function configureEventListener(){
 	_.extend(EventListener,Backbone.Events);
-	EventListener.on('eventsaved', function(msg){
-		console.log(status);
+	EventListener.on('eventsaved', function(status, res){
+		if (status == 'error') {
+			alert(res.responseText);
+		}
 		fetchCollectionForViewdMap();
 	})
-
+	EventListener.on('joiendEvent', function () {
+		fetchMyEvents();
+	})
 	var object = {};
 }
 
