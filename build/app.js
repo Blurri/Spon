@@ -234,6 +234,8 @@ module.exports.newEvent = Backbone.View.extend({
 		model.set('loc', [this.point.latLng.lng(),this.point.latLng.lat()]);		
 		model.url = '/event';
 		model.save().complete(function (res, status) {
+			console.log(res);
+			console.log(status);
 			EventListener.trigger('eventsaved', status);
 			self.remove();			
 		})
