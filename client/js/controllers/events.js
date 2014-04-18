@@ -112,12 +112,13 @@ module.exports.detailEvent = Backbone.View.extend({
 		var self = this;
 
 		if (checkTextField(self.el)) {
-
+			$(self.el).find('#newMsg').prop('disabled', true);
 			var msg = $(self.el).find('#newMsg').val();
 			$(self.el).find('#newMsg').val('');
 			$.post('/addMessage/'+ self.model.id,{
 				message : msg
 			}, function  (data) {
+				$(self.el).find('#newMsg').prop('disabled', false);
 				$('#newMsg').val('');
 				socket.emit('postMessage', data, self.model.id);
 			})
