@@ -105,14 +105,23 @@ module.exports.detailEvent = Backbone.View.extend({
 		})
 	},
 	sendMsg : function  (e) {
-		var self = this;
 		e.preventDefault();
-		$.post('/addMessage/'+ self.model.id,{
-			message : $(this.el).find('#newMsg').val()
-		}, function  (data) {
-			$('#newMsg').val('');
-			socket.emit('postMessage', data, self.model.id);
-		})
+		var self = this;
+
+		if (checkTextField(self.el)) {
+
+			var msg = $(self.el).find('#newMsg').val();
+			$(self.el).find('#newMsg').val('');
+			$.post('/addMessage/'+ self.model.id,{
+				message : msg
+			}, function  (data) {
+				$('#newMsg').val('');
+				socket.emit('postMessage', data, self.model.id);
+			})
+
+		}
+		
+		
 	}
 })
 
@@ -181,3 +190,12 @@ function createMSG (msg) {
 	return '<div class="'+msg.nickname+'"> <p> <strong class="nickname"> '	+ msg.nickname + ' </strong> <i class="createdAt"> ' + moment(msg.created_at).format('LLL') + ' </i><br /> ' + msg.message + ' </p> </div> ';
 }
 
+
+
+function checkTextField (el) {
+	var returnVal = false;
+	if($(el).find('#newMsg').val().length > 0){
+		returnVal = true;
+	}
+	return returnVal;
+}

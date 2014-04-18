@@ -1,31 +1,61 @@
-include ./layouts/layout
+doctype html
+html
+  head
+    title= Spontanious
 
-block content
-
-
-	input(type="text", placeholder="")
-
-
-	script.
-
-		var socket = io.connect('http://localhost');
-		socket.emit('joinChat', 454554);
-		socket.emit('joinChat', 487543);
-		
-		socket.on('userJoind', function (msg){
-			console.log(msg);
-			socket.emit('postMessage','hallo',487543);
-			socket.emit('postMessage','hallo',454554);
-		})
-		socket.on('newMessage', function(msg){
-			console.log('new Message');
-			console.log(msg);
-		});
+    link(rel='stylesheet', href='/css/normalize.css')
+    link(rel='stylesheet', href='/css/DrinkingBud.css')
+    
+  body
+    script(type="text/javascript", src="js/jquery.js")
+    script(type="text/javascript", src="/js/foundation.min.js")
 
 
-		//- var socket = io.connect('http://localhost');
-		//- socket.emit('joinChat', 71287891);
-		//- socket.emit('joinChat', 9298910);
-		//- socket.on('userJoind', function (msg){
-		//- 	console.log(msg);
-		//- })
+    nav.top-bar(data-topbar)
+        ul.title-area
+            li.name
+                h1
+                    a(href='#') Spontanious
+            li.toggle-topbar.menu-icon
+                a(href='#')
+        section.top-bar-section
+            // Right Nav Section 
+            ul.right
+                if isAuthenticated
+                    li
+                        a(href="/logout") Logout
+                else
+                    li.has-dropdown#login
+                        a(href='#') Login
+                        ul.dropdown
+                            include users/login
+
+                    li.has-dropdown#signup
+                        a(href='#') Signup
+                        ul.dropdown
+                            include users/signup
+
+                li.has-dropdown
+                    a(href='#') Menu
+                    ul.dropdown
+                        li
+                            a(href='#')                        
+    
+    input#pac-input.controls(type="text" placeholder="Search Box")
+    #map_canvas
+    #newEventModal.reveal-modal(data-reveal)
+        a.close-reveal-modal &#215;
+    #myModal.reveal-modal(data-reveal)
+        h2 Awesome. I have it.
+        p.lead your couch. its mine
+        p I'm a cool paragraph that lives inside of a even cooler modal . Wins
+        input#pac-input2.controls(type="text" placeholder="Search Box")
+        a.close-reveal-modal &#215;
+    #eventDetail.reveal-modal(data-reveal)
+        a.close-reveal-modal &#215;
+
+    script.
+        $(document).foundation();
+        
+
+    #footer

@@ -2,35 +2,6 @@ include ./layouts/layout.jade
 
 
 block content
-    nav.top-bar(data-topbar)
-        ul.title-area
-            li.name
-                h1
-                    a(href='#') Spontanious
-            li.toggle-topbar.menu-icon
-                a(href='#')
-        section.top-bar-section
-            // Right Nav Section 
-            ul.right
-                if isAuthenticated
-                    li
-                        a(href="/logout") Logout
-                else
-                    li.has-dropdown#login
-                        a(href='#') Login
-                        ul.dropdown
-                            include users/login
-
-                    li.has-dropdown#signup
-                        a(href='#') Signup
-                        ul.dropdown
-                            include users/signup
-
-                li.has-dropdown
-                    a(href='#') Menu
-                    ul.dropdown
-                        li
-                            a(href='#')                        
     
     input#pac-input.controls(type="text" placeholder="Search Box")
     #map_canvas

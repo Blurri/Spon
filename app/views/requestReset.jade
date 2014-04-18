@@ -1,3 +1,10 @@
-form(id="requestReset", method="post", action="/pwReset")
-	input(type="text", placeholder="email" name="email")
-	button(type="submit") Send
+include ./layouts/layout.jade
+
+
+block content
+
+	br
+	form(id="requestReset", method="post", action="/pwReset")
+		.small-4.columns
+			input(type="email", placeholder="email" name="email" class="")
+			button(type="submit" class="button radius") Send
