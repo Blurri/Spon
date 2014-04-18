@@ -19,6 +19,9 @@ block content
     if isAuthenticated
         script.
             var loggedInNickname = !{JSON.stringify(username)};
+    else
+        script.
+            var loggedInNickname = 'nobody';
 
     #controllView
     #footer

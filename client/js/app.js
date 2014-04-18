@@ -14,6 +14,7 @@ var moment = require('moment');
 
 $(document).ready(function(){
 
+	console.log(isAuthenticated);
 
 	configureEventListener();
 	collection = new Events();
