@@ -143,7 +143,7 @@ exports.addMessage = function  (req, res) {
 
 
 function checkDatabase (done, req) {
-	Event.find({ members : req.user._id }, function (err, results) {
+	Event.find({ members : req.user._id, end_time : { $gt : new Date()} }, function (err, results) {
 		if (err) {
 			return done(err);
 		}
