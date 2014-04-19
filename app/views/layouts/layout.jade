@@ -7,7 +7,12 @@ html
     link(rel='stylesheet', href='/css/DrinkingBud.css')
     
   body
-    #error
+    #error.reveal-modal(data-reveal)
+        h1 ERROR
+        strong owwww sad panda it looks like a ugly error occured!!
+        p because
+            #errorMsg
+        a.close-reveal-modal &#215;
     nav.top-bar(data-topbar)
         ul.title-area
             li.name

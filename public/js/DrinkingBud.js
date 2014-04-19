@@ -17816,7 +17816,8 @@ function configureEventListener(){
 	_.extend(EventListener,Backbone.Events);
 	EventListener.on('eventsaved', function(status, res){
 		if (status == 'error') {
-			alert(res.responseText);
+			$('#error').find('#errorMsg').html(res.responseText);
+			$('#error').foundation('reveal', 'open');
 		}
 		fetchCollectionForViewdMap();
 	})
@@ -18020,7 +18021,6 @@ function getData (el) {
 	var description = $(el).find('#description').val();
 
 	var dates = checkTime(start_time,end_time);
-	console.log(dates);
 	return {
 		start_time : dates[0],
 		end_time : dates[1],

@@ -1,6 +1,6 @@
 var Event = require('../models/event');
 var Chat = require('../models/chat');
-
+var moment = require('moment');
 exports.create = function (req,res,next) {
 
 	checkDatabase(function (value) {
@@ -8,7 +8,6 @@ exports.create = function (req,res,next) {
 			if (value >= 2) {
 				res.send('too much active events', 405)
 			} else {
-				console.log(req.body);
 				var newEvent = new Event(req.body);
 				var date = new Date();
 				newEvent.members.push(req.user._id);
@@ -130,8 +129,6 @@ exports.addMessage = function  (req, res) {
 		if (err) {
 			res.send('505', 'Error!!!');
 		}
-
-
 		Chat.findByIdAndUpdate(event.chat._id, {
 			$push: { "messages" : newChatMessage(req) }
 		}, function (err, chat) {
@@ -168,7 +165,6 @@ function calcDiff ( date1, date2 ) {
   // Convert back to days and return
   return Math.round(difference_ms/houresInMS); 
 } 
-
 
 
 function newChatMessage (req) {

@@ -1,0 +1,4 @@
+Fehler:
+
+Man kann Leere Events erstellen.
+Zeit wird nicht korrekt überprüft.

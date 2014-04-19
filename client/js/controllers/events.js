@@ -118,7 +118,6 @@ module.exports.detailEvent = Backbone.View.extend({
 			$.post('/addMessage/'+ self.model.id,{
 				message : msg
 			}, function  (data) {
-				$(self.el).find('#newMsg').prop('disabled', false);
 				$('#newMsg').val('');
 				socket.emit('postMessage', data, self.model.id);
 			})
@@ -157,7 +156,6 @@ function getData (el) {
 	var description = $(el).find('#description').val();
 
 	var dates = checkTime(start_time,end_time);
-	console.log(dates);
 	return {
 		start_time : dates[0],
 		end_time : dates[1],
