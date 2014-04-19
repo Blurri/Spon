@@ -89,7 +89,7 @@ function setUpContextMenu () {
 			name: 'new_event',
 			action: function(e) {
 				var view = new EventView();
-				view.render(e,EventListener)
+				view.render(e)
 			}
 		}]
 	});
@@ -132,7 +132,7 @@ function fetchCollectionComplete (res, status) {
 			lng : loc[0],
 			click : function () {	
 				var view = new EventDetailView();
-				view.render(event);
+				view.render(event,EventListener);
 			}
 		})		
 	});
@@ -182,7 +182,8 @@ function renderMyEvents () {
 $.ajaxSetup({
             statusCode: {
                 401: function(){
-           			alert('Please log in with your account');
+           			$('#error').find('#errorMsg').html('Please log in with your account');
+					$('#error').foundation('reveal', 'open');
                 }
             }
         });
@@ -259,6 +260,7 @@ module.exports.detailEvent = Backbone.View.extend({
 	render : function (model, eventListener) {
 		EventListener = eventListener;
 		var self = this;
+		
 		self.model = model;
 		
 		self.model.urlRoot = '/eventChat';
@@ -275,7 +277,9 @@ module.exports.detailEvent = Backbone.View.extend({
 				messages[i].created_at = moment(messages[i].created_at).format('LLL');
 			}
 			configureSocketIO(self.model, self.el)
+
 			$(self.el).html(self.template(self.model.toJSON()));
+
 			$('#eventDetail').bind('closed', function() {
 				socket.emit('leaveChat', self.model.id);
 			});
@@ -283,33 +287,38 @@ module.exports.detailEvent = Backbone.View.extend({
 			if (loggedInNickname != 'nobody') {
 				$('.' + loggedInNickname).css({'background-color' : '#EEEEEE'});
 			}
-			return;	
+			scrollToBottom();
+			return;
 		});
+		
 	},
 	joinEvent : function (e) {
 		var self = this;
 		e.preventDefault();
 		this.model.url = '/joinEvent';
-		this.model.save().complete(function (err, status) {
-			if (err) {
-				alert(err);
+		this.model.save().complete(function (res, status) {
+
+			if (status == 'error') {
+				$('#error').find('#errorMsg').html(res.responseText);
+				$('#error').foundation('reveal', 'open');
 			}
-			$(self.el).find('#membersCount').html(self.model.members.length);
+
+			$(self.el).find('#membersCount').html(self.model.get('members').length);
 			EventListener.trigger('joiendEvent');
 		})
 	},
 	sendMsg : function  (e) {
 		e.preventDefault();
+		e.stopPropagation();
 		var self = this;
 
 		if (checkTextField(self.el)) {
-			$(self.el).find('#newMsg').prop('disabled', true);
+			
 			var msg = $(self.el).find('#newMsg').val();
 			$(self.el).find('#newMsg').val('');
 			$.post('/addMessage/'+ self.model.id,{
 				message : msg
 			}, function  (data) {
-				$(self.el).find('#newMsg').prop('disabled', false);
 				$('#newMsg').val('');
 				socket.emit('postMessage', data, self.model.id);
 			})
@@ -331,7 +340,6 @@ module.exports.myEvents = Backbone.View.extend({
 	el : '#controllView',
 	template : myEventsTemplate,
 	render : function  () {
-		console.log(this.collection.toJSON());
 		return $(this.el).html(this.template(this.collection.toJSON()));
 	}
 })
@@ -379,7 +387,7 @@ function checkTime(start, end) {
 	var returnVal = [];
 	returnVal.push(dateStart.toDate());
 	returnVal.push(dateEnd.toDate());
-	console.log(returnVal);
+	
 	return returnVal;
 
 }
@@ -391,8 +399,7 @@ function configureSocketIO (model, el) {
 		var newMsg = createMSG(msg);
 
 		$(el).find('#msgBox').append(newMsg);
-		var objDiv = document.getElementById('msgBox');
-		objDiv.scrollTop = objDiv.scrollHeight;
+		scrollToBottom();
 		if (loggedInNickname != 'nobody') {
 			$('.' + loggedInNickname).css({'background-color' : '#EEEEEE'});
 		}		
@@ -405,6 +412,10 @@ function createMSG (msg) {
 	return '<div class="'+msg.nickname+'"> <p> <strong class="nickname"> '	+ msg.nickname + ' </strong> <i class="createdAt"> ' + moment(msg.created_at).format('LLL') + ' </i><br /> ' + msg.message + ' </p> </div> ';
 }
 
+function scrollToBottom () {
+	var objDiv = document.getElementById('msgBox');
+	objDiv.scrollTop = objDiv.scrollHeight;
+}
 
 
 function checkTextField (el) {
@@ -414,6 +425,13 @@ function checkTextField (el) {
 	}
 	return returnVal;
 }
+
+
+
+//REVAL  EVENT
+$(document).on('opened', '[data-reveal]', function () {
+  scrollToBottom();
+});
 },{"../../views/detailEvent.hbs":4,"../../views/myEvents.hbs":5,"../../views/newEvent.hbs":6,"handlebars":22}],3:[function(require,module,exports){
 var DetailEvent = require('./controllers/events').detailEvent;
 var Event = require('./controllers/events').eventModel;

@@ -88,7 +88,7 @@ function setUpContextMenu () {
 			name: 'new_event',
 			action: function(e) {
 				var view = new EventView();
-				view.render(e,EventListener)
+				view.render(e)
 			}
 		}]
 	});
@@ -131,7 +131,7 @@ function fetchCollectionComplete (res, status) {
 			lng : loc[0],
 			click : function () {	
 				var view = new EventDetailView();
-				view.render(event);
+				view.render(event,EventListener);
 			}
 		})		
 	});
@@ -181,7 +181,8 @@ function renderMyEvents () {
 $.ajaxSetup({
             statusCode: {
                 401: function(){
-           			alert('Please log in with your account');
+           			$('#error').find('#errorMsg').html('Please log in with your account');
+					$('#error').foundation('reveal', 'open');
                 }
             }
         });

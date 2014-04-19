@@ -68,6 +68,7 @@ module.exports.detailEvent = Backbone.View.extend({
 	render : function (model, eventListener) {
 		EventListener = eventListener;
 		var self = this;
+		
 		self.model = model;
 		
 		self.model.urlRoot = '/eventChat';
@@ -84,7 +85,9 @@ module.exports.detailEvent = Backbone.View.extend({
 				messages[i].created_at = moment(messages[i].created_at).format('LLL');
 			}
 			configureSocketIO(self.model, self.el)
+
 			$(self.el).html(self.template(self.model.toJSON()));
+
 			$('#eventDetail').bind('closed', function() {
 				socket.emit('leaveChat', self.model.id);
 			});
@@ -92,24 +95,29 @@ module.exports.detailEvent = Backbone.View.extend({
 			if (loggedInNickname != 'nobody') {
 				$('.' + loggedInNickname).css({'background-color' : '#EEEEEE'});
 			}
-			return;	
+			scrollToBottom();
+			return;
 		});
+		
 	},
 	joinEvent : function (e) {
 		var self = this;
 		e.preventDefault();
 		this.model.url = '/joinEvent';
-		this.model.save().complete(function (err, status) {
-			if (err) {
-				alert(err);
+		this.model.save().complete(function (res, status) {
+
+			if (status == 'error') {
+				$('#error').find('#errorMsg').html(res.responseText);
+				$('#error').foundation('reveal', 'open');
 			}
-			$(self.el).find('#membersCount').html(self.model.members.length);
+
+			$(self.el).find('#membersCount').html(self.model.get('members').length);
 			EventListener.trigger('joiendEvent');
 		})
 	},
 	sendMsg : function  (e) {
 		e.preventDefault();
-		event.stopPropagation();
+		e.stopPropagation();
 		var self = this;
 
 		if (checkTextField(self.el)) {
@@ -140,7 +148,6 @@ module.exports.myEvents = Backbone.View.extend({
 	el : '#controllView',
 	template : myEventsTemplate,
 	render : function  () {
-		console.log(this.collection.toJSON());
 		return $(this.el).html(this.template(this.collection.toJSON()));
 	}
 })
@@ -188,7 +195,7 @@ function checkTime(start, end) {
 	var returnVal = [];
 	returnVal.push(dateStart.toDate());
 	returnVal.push(dateEnd.toDate());
-	console.log(returnVal);
+	
 	return returnVal;
 
 }
@@ -200,8 +207,7 @@ function configureSocketIO (model, el) {
 		var newMsg = createMSG(msg);
 
 		$(el).find('#msgBox').append(newMsg);
-		var objDiv = document.getElementById('msgBox');
-		objDiv.scrollTop = objDiv.scrollHeight;
+		scrollToBottom();
 		if (loggedInNickname != 'nobody') {
 			$('.' + loggedInNickname).css({'background-color' : '#EEEEEE'});
 		}		
@@ -214,6 +220,10 @@ function createMSG (msg) {
 	return '<div class="'+msg.nickname+'"> <p> <strong class="nickname"> '	+ msg.nickname + ' </strong> <i class="createdAt"> ' + moment(msg.created_at).format('LLL') + ' </i><br /> ' + msg.message + ' </p> </div> ';
 }
 
+function scrollToBottom () {
+	var objDiv = document.getElementById('msgBox');
+	objDiv.scrollTop = objDiv.scrollHeight;
+}
 
 
 function checkTextField (el) {
@@ -223,3 +233,10 @@ function checkTextField (el) {
 	}
 	return returnVal;
 }
+
+
+
+//REVAL  EVENT
+$(document).on('opened', '[data-reveal]', function () {
+  scrollToBottom();
+});
