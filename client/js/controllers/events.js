@@ -109,10 +109,11 @@ module.exports.detailEvent = Backbone.View.extend({
 	},
 	sendMsg : function  (e) {
 		e.preventDefault();
+		event.stopPropagation();
 		var self = this;
 
 		if (checkTextField(self.el)) {
-			$(self.el).find('#newMsg').prop('disabled', true);
+			
 			var msg = $(self.el).find('#newMsg').val();
 			$(self.el).find('#newMsg').val('');
 			$.post('/addMessage/'+ self.model.id,{
