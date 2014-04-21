@@ -4,15 +4,9 @@ include ./layouts/layout.jade
 block content
 
 
-	form(id="pwReset", method="post", action="/pwUpdate")
-		fieldset.small-2
+	form.row(id="pwReset", method="post", action="/pwUpdate")
+		fieldset.small-4.columns
 			input(type="password", placeholder="password" name="password")
 			input(type="hidden", value="#{guid}", name="guid")
 			input(type="hidden", value="#{email}", name="email")
-			button(type="submit") Update
-
-	h1
-		The password recovery gang!
-
-	h1 !{guid}
-	h1 !{email}
+			button.button.radius(type="submit") Update

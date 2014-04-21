@@ -10,8 +10,10 @@
 		<p>{{description}}</p>
 		<label>Members</label>
 		<p id="membersCount">{{members.length}}</p>
-		<button id="joinEvent" class="button small radius">Join</button>
-		<br />
+		<div id="joinLeaveButton">
+			{{#checkMembers members}}
+			{{/checkMembers}}
+		</div>
 	</div>
 	<div id="msgBox">
 		{{#each chat.messages}}
@@ -30,5 +32,10 @@
 	<button id="sendMsg" class="button small radius">Senden</button>
 
 </div>
+
+{{!-- {{#iterate chat.messages}}
+	{{this}}
+{{/iterate}} --}}
+
 
 <a class="close-reveal-modal">&#215;</a>

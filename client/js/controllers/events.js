@@ -1,11 +1,15 @@
 /*
 Dependencies
 */
+// var Handlebars = require('handlebars');
+var Handlebars = require('hbsfy/runtime');
 var socket = io.connect(window.location.hostname);
 var newTemplate = require('../../views/newEvent.hbs');	
 var myEventsTemplate = require('../../views/myEvents.hbs');	
 var detailTemplate = require('../../views/detailEvent.hbs');
-var Handlebars = require('handlebars');
+
+var joinButton = '<button id="joinEvent" class="button small radius success">Join</button>';
+var leaveButton = '<button id="leaveEvent" class="button small radius">Leave</button>';
 
 
 /*
@@ -53,7 +57,6 @@ module.exports.newEvent = Backbone.View.extend({
 		model.url = '/event';
 		model.save().complete(function (res, status) {
 			EventListener.trigger('eventsaved', status, res);
-			// self.remove();			
 		})
 	}
 })
@@ -63,7 +66,8 @@ module.exports.detailEvent = Backbone.View.extend({
 	template : detailTemplate,
 	events : {
 		'click #joinEvent' : 'joinEvent',
-		'click #sendMsg' : 'sendMsg'
+		'click #sendMsg' : 'sendMsg',
+		'click #leaveEvent' : 'leaveEvent'
 	},
 	render : function (model, eventListener) {
 		EventListener = eventListener;
@@ -111,9 +115,28 @@ module.exports.detailEvent = Backbone.View.extend({
 				$('#error').foundation('reveal', 'open');
 			}
 
+			$(self.el).find('#joinLeaveButton').html(leaveButton);
+
 			$(self.el).find('#membersCount').html(self.model.get('members').length);
 			EventListener.trigger('joiendEvent');
 		})
+	},
+	leaveEvent : function  (e) {
+		var self = this;
+		e.preventDefault();
+		e.stopPropagation();
+		self.model.url = '/leaveEvent';
+		self.model.save().complete(function (res, status) {
+			if (status == 'error') {
+				$('#error').find('#errorMsg').html(res.responseText);
+				$('#error').foundation('reveal', 'open');
+			}
+
+			$(self.el).find('#joinLeaveButton').html(joinButton);
+			$(self.el).find('#membersCount').html(self.model.get('members').length);
+			$('#eventDetail').foundation('reveal', 'close');
+			EventListener.trigger('leavedEvent');
+		})	
 	},
 	sendMsg : function  (e) {
 		e.preventDefault();
@@ -234,6 +257,17 @@ function checkTextField (el) {
 	return returnVal;
 }
 
+
+Handlebars.registerHelper('checkMembers', function (membersArray) {
+
+	var returnVal = joinButton;
+	for (var i = 0; i < membersArray.length; i++) {
+		if (membersArray[i] == userId) {
+			returnVal = leaveButton;
+		}
+	}
+	return returnVal;
+})
 
 
 //REVAL  EVENT

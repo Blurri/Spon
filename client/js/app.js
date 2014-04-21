@@ -13,8 +13,6 @@ var moment = require('moment');
 
 
 $(document).ready(function(){
-
-
 	configureEventListener();
 	collection = new Events();
 	fetchMyEvents();
@@ -150,6 +148,11 @@ function configureEventListener(){
 	EventListener.on('joiendEvent', function () {
 		fetchMyEvents();
 	})
+	EventListener.on('leavedEvent', function () {
+		fetchMyEvents();
+		fetchCollectionForViewdMap();
+	})
+
 	var object = {};
 }
 

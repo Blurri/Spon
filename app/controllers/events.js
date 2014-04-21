@@ -41,24 +41,29 @@ exports.joinEvent = function (req, res, next) {
 		}
 	}, req)
 }
-//==================
-//TEST
-exports.eventlist = function  (req, res, next) {
-	
-	var distance = req.body.distance;
-	var longitude = req.body.longitude;
-	var latitude = req.body.latitude;
 
-	Event.find({loc : {
-		$geoWithin : {
-			$centerSphere : [[longitude, latitude],
-			distance / 6371]
-		}, end_time : { $gt : new Date()}
-	}}, function (err, result) {
-		res.json(result);
-	});
+
+
+exports.leaveEvent = function  (req, res, next) {
+	Event.findByIdAndUpdate(req.body._id, { $pull : { 'members' : req.user._id }}, function (err, event) {
+		if (err) {
+			return next(err);
+		}
+		if (!event.members.length > 0) {
+			event.remove(function (err) {
+				if (err) {
+					return next(err);
+				} else {
+					res.send('Event deleted', 200);
+				}
+			})
+		} else {
+			res.json(event);
+		}
+	})
 }
-//=================
+
+
 
 exports.eventsList = function  (req, res, next) {	
 	var distance = req.query.distance;
@@ -95,24 +100,7 @@ exports.myevents = function  (req, res, next) {
 	})
 }
 
-exports.leaveEvent = function  (req, res, next) {
-	Event.findByIdAndUpdate(req.params.id, { $pull : { 'members' : req.user._id }}, function (err, event) {
-		if (err) {
-			return next(err);
-		}
-		if (!event.members.length > 0) {
-			event.remove(function (err) {
-				if (err) {
-					return next(err);
-				} else {
-					res.send('Event deleted', 200);
-				}
-			})
-		} else {
-			res.json(event);
-		}
-	})
-}
+
 
 
 exports.chat = function (req, res) {

@@ -26,22 +26,23 @@ module.exports = function  (app, passport, auth) {
 
 	//EVENT ROUTES
 	app.post('/event', auth.requiresLogin, EventController.create);
-	app.post('/eventlist', EventController.eventlist);
+	
 	app.get('/eventsList', EventController.eventsList);
 	app.get('/myevents', auth.requiresLogin, EventController.myevents);
+
 	app.get('/leaveEvent/:id', auth.requiresLogin, EventController.leaveEvent);
 	app.get('/joinEvent/:id', auth.requiresLogin, EventController.joinEvent);
 	app.get('/findEvent', EventController.eventForId);
-	app.put('/joinEvent', auth.requiresLogin, EventController.joinEvent)
 
+
+	app.put('/joinEvent', auth.requiresLogin, EventController.joinEvent)
+	app.put('/leaveEvent', auth.requiresLogin, EventController.leaveEvent);
+	
 	app.get('/eventChat/:id', EventController.chat);
 	app.post('/addMessage/:id', EventController.addMessage);
 
-	app.get('/chat', function  (req, res) {
-		res.render('chat');
-	})
 	//PW reset
-	// app.post('/pwReset/', PasswortReset.resetPassword);
+	
 	app.get('/requestReset', function (req, res) {
 		res.render('requestReset');
 	})
