@@ -327,7 +327,7 @@ module.exports.detailEvent = Backbone.View.extend({
 				$('#error').foundation('reveal', 'open');
 			}
 
-			$(self.el).find('#joinLeaveButton').html(joinButton);
+			// $(self.el).find('#joinLeaveButton').html(joinButton);
 			$(self.el).find('#membersCount').html(self.model.get('members').length);
 			$('#eventDetail').foundation('reveal', 'close');
 			EventListener.trigger('leavedEvent');
@@ -440,7 +440,9 @@ function createMSG (msg) {
 
 function scrollToBottom () {
 	var objDiv = document.getElementById('msgBox');
-	objDiv.scrollTop = objDiv.scrollHeight;
+	if (objDiv) {
+		objDiv.scrollTop = objDiv.scrollHeight;	
+	};
 }
 
 
@@ -564,7 +566,7 @@ function program3(depth0,data) {
   buffer += "\n		</div>\n	</div>\n	<div id=\"msgBox\">\n		";
   stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.chat)),stack1 == null || stack1 === false ? stack1 : stack1.messages), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	</div>\n\n	<input type=\"text\" id=\"newMsg\" />\n	<button id=\"sendMsg\" class=\"button small radius\">Senden</button>\n\n</div>\n\n\n\n\n<a class=\"close-reveal-modal\">&#215;</a>\n";
+  buffer += "\n	</div>\n\n	<input type=\"text\" id=\"newMsg\" />\n	<button id=\"sendMsg\" class=\"button small radius\">Senden</button>\n\n</div>\n\n<a class=\"close-reveal-modal\">&#215;</a>\n";
   return buffer;
   });
 
@@ -603,7 +605,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div>\n	<div class=\"row\">\n		<div class=\"small-2 columns\">\n			<label>Start time:</label>\n			<input type=\"time\" id=\"start_time\" value=\"00:00\">\n		</div>\n	</div>\n	<div class=\"row\">\n		<div class=\"small-2 columns\">\n			<label>End time:</label>\n			<input type=\"time\" id=\"end_time\" value=\"00:00\">\n		</div>\n	</div>\n	<div class=\"row\">\n		<div class=\"small-2 columns\">\n			<label>Where:</label>\n			<input type=\"text\" id=\"where\" >\n		</div>\n	</div>\n	<div class=\"row\">\n		<div class=\"small-7 columns\">\n			<label>Description</label>\n			<textarea id=\"description\" class=\"textareaDescription\"></textarea>\n		</div>\n	</div>\n	<div class=\"small-7 columns\">\n		<button class=\"button radius\" id=\"submitNewEvent\">Sumbit</button>\n	</div>\n</div>";
+  return "<div>\n	<div class=\"row\">\n		<div class=\"small-2 columns\">\n			<label>Start time:</label>\n			<input type=\"time\" id=\"start_time\" value=\"00:00\">\n		</div>\n	</div>\n	<div class=\"row\">\n		<div class=\"small-2 columns\">\n			<label>End time:</label>\n			<input type=\"time\" id=\"end_time\" value=\"00:00\">\n		</div>\n	</div>\n	<div class=\"row\">\n		<div class=\"small-2 columns\">\n			<label>Where:</label>\n			<input type=\"text\" id=\"where\" >\n		</div>\n	</div>\n	<div class=\"row\">\n		<div class=\"small-7 columns\">\n			<label>Description</label>\n			<textarea id=\"description\" class=\"textareaDescription\"></textarea>\n		</div>\n	</div>\n	<div class=\"small-7 columns\">\n		<button class=\"button radius\" id=\"submitNewEvent\">Sumbit</button>\n	</div>\n</div>\n\n<a class=\"close-reveal-modal\">&#215;</a>";
   });
 
 },{"hbsfy/runtime":14}],7:[function(require,module,exports){

@@ -245,7 +245,9 @@ function createMSG (msg) {
 
 function scrollToBottom () {
 	var objDiv = document.getElementById('msgBox');
-	objDiv.scrollTop = objDiv.scrollHeight;
+	if (objDiv) {
+		objDiv.scrollTop = objDiv.scrollHeight;	
+	};
 }
 
 
