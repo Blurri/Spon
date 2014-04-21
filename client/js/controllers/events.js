@@ -132,7 +132,7 @@ module.exports.detailEvent = Backbone.View.extend({
 				$('#error').foundation('reveal', 'open');
 			}
 
-			$(self.el).find('#joinLeaveButton').html(joinButton);
+			// $(self.el).find('#joinLeaveButton').html(joinButton);
 			$(self.el).find('#membersCount').html(self.model.get('members').length);
 			$('#eventDetail').foundation('reveal', 'close');
 			EventListener.trigger('leavedEvent');
