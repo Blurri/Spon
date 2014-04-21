@@ -17760,7 +17760,7 @@ function setUpContextMenu () {
 			name: 'new_event',
 			action: function(e) {
 				var view = new EventView();
-				view.render(e)
+				view.render(e, EventListener);
 			}
 		}]
 	});
@@ -17820,6 +17820,7 @@ function configureEventListener(){
 		fetchCollectionForViewdMap();
 	})
 	EventListener.on('joinedEvent', function () {
+		console.log('triggerd joinedEvent');
 		fetchCollectionForViewdMap();
 		fetchMyEvents();
 	})
