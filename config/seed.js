@@ -13,7 +13,7 @@ var array = [
 		title : 'first event',
 		where : 'In the Pub!',
 		description : 'It should be fun at least',
-		loc : [8, 47],
+		loc : [8.308654, 47.045954],
 		start_time : date1,
 		end_time : date2
 	},

@@ -39,14 +39,21 @@ module.exports.newEvent = Backbone.View.extend({
 	},
 	template : newTemplate,
 	render : function (e, eventListener) {
+		var self = this;
 		this.point = e;
 		EventListener = eventListener;
+
+		$('#newEventModal').bind('closed', function() {
+			// self.$el.empty();
+			// self.remove();
+			// self.off();
+		});
 		$(this.el).html(this.template());
 		$('#newEventModal').foundation('reveal', 'open');
 		return 
 	},
 	submitNewEvent : function (e) {
-		self = this;
+		var self = this;
 
 		e.preventDefault();
 		
@@ -73,6 +80,8 @@ module.exports.detailEvent = Backbone.View.extend({
 		EventListener = eventListener;
 		var self = this;
 		
+		self.$el.empty();
+
 		self.model = model;
 		
 		self.model.urlRoot = '/eventChat';
@@ -83,7 +92,7 @@ module.exports.detailEvent = Backbone.View.extend({
 			self.model.set({'start_time' : d1.format('LLL')});
 			self.model.set({'end_time' : d2.format('LLL')});
 			var messages = self.model.get('chat').messages;
-
+			console.log(messages);
 			for(var i = 0; i < messages.length;i++){
 
 				messages[i].created_at = moment(messages[i].created_at).format('LLL');
@@ -94,6 +103,9 @@ module.exports.detailEvent = Backbone.View.extend({
 
 			$('#eventDetail').bind('closed', function() {
 				socket.emit('leaveChat', self.model.id);
+				// self.$el.empty();
+				// self.remove();
+				// self.off();
 			});
 			$('#eventDetail').foundation('reveal', 'open');
 			if (loggedInNickname != 'nobody') {
@@ -118,7 +130,7 @@ module.exports.detailEvent = Backbone.View.extend({
 			$(self.el).find('#joinLeaveButton').html(leaveButton);
 
 			$(self.el).find('#membersCount').html(self.model.get('members').length);
-			EventListener.trigger('joiendEvent');
+			EventListener.trigger('joinedEvent');
 		})
 	},
 	leaveEvent : function  (e) {
@@ -133,7 +145,7 @@ module.exports.detailEvent = Backbone.View.extend({
 			}
 
 			// $(self.el).find('#joinLeaveButton').html(joinButton);
-			$(self.el).find('#membersCount').html(self.model.get('members').length);
+			// $(self.el).find('#membersCount').html(self.model.get('members').length);
 			$('#eventDetail').foundation('reveal', 'close');
 			EventListener.trigger('leavedEvent');
 		})	
@@ -245,7 +257,7 @@ function createMSG (msg) {
 
 function scrollToBottom () {
 	var objDiv = document.getElementById('msgBox');
-	if (objDiv) {
+	if (objDiv) {		
 		objDiv.scrollTop = objDiv.scrollHeight;	
 	};
 }

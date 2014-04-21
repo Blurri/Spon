@@ -20,8 +20,8 @@ $(document).ready(function(){
 	$(document).foundation();
 	map = new GMaps({
 	el: '#map_canvas',
-	lat: 47,
-	lng: 8,
+	lat: 47.045954,
+	lng: 8.308654,
 	zoomControl : true,
 	zoomControlOpt: {
 		position: 'TOP_LEFT'
@@ -145,13 +145,15 @@ function configureEventListener(){
 		}
 		fetchCollectionForViewdMap();
 	})
-	EventListener.on('joiendEvent', function () {
+	EventListener.on('joinedEvent', function () {
+		fetchCollectionForViewdMap();
 		fetchMyEvents();
 	})
 	EventListener.on('leavedEvent', function () {
 		fetchMyEvents();
 		fetchCollectionForViewdMap();
 	})
+
 
 	var object = {};
 }
